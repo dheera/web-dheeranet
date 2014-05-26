@@ -1,3 +1,6 @@
+#!/usr/bin/env python
+# -*- coding: utf-8 -*-
+
 from flask import Flask,request,render_template,send_file,send_from_directory,redirect
 from jinja2 import Markup
 from boto.s3.connection import S3Connection
@@ -8,30 +11,43 @@ s3 = S3Connection(open('.aws_id').read().strip(),open('.aws_secret').read().stri
 objects_bucket = s3.get_bucket('objects.dheera.net')
 photos_bucket = s3.get_bucket('photos.dheera.net')
 
+# parse multilingual HTML
 def lang(code):
+  # function to parse one string unit {|en:apple|zh:蘋果|}
   def repl_func(subcode):
     accept_languages = request.environ['HTTP_ACCEPT_LANGUAGE']
 
+    # check if user has overridden browser language with a cookie
     if 'lang' in request.cookies:
       accept_languages = request.cookies['lang'] + ',' + accept_languages
 
+    # check if user wants to override browser language
     if 'lang' in request.args:
+      # todo: actually set the cookie
       accept_languages = request.args['lang'] + ',' + accept_languages
 
+    # build dictionary { 'en' => 'apple', 'zh' => '蘋果‘ }
     subcode_dict=dict()
-
     for subcode_string in subcode.group(0).strip('{|}').split('|'):
       k, v = subcode_string.split(':',1)
       subcode_dict[k]=v
+      if not k[0:2] in subcode_dict:
+        subcode_dict[k[0:2]]=v
 
+    # iterate through language preferences and return the first match
     for accept_language in accept_languages.split(','):
+      # don't care about q= spec for now, kill it
       accept_language = re.sub(';.*','',accept_language)
+      # check if there is an exact match, e.g. zh_TW
       if accept_language in subcode_dict:
         return subcode_dict[accept_language]
+      # check if there is an approximate match, e.g. zh
       if accept_language[0:2] in subcode_dict:
         return subcode_dict[accept_language[0:2]]
+    # fall back to English
     if 'en' in subcode_dict:
       return subcode_dict['en']
+    # fall back to null
     if '' in subcode_dict:
       return subcode_dict['']
 
