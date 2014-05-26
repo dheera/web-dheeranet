@@ -1,4 +1,4 @@
 #!/bin/sh
-rm summit/cache/*
+rm dheeranet/cache/*
 sync
-#rsync -r -u -v --delete --delete-after --exclude 'README.md' --exclude 'htaccess' --exclude '.git' --exclude '.htaccess' --exclude 'deploy.sh' . /mit/sustainability/web_scripts/summit/
+rsync -r -u -v --delete --delete-after --exclude 'README.md' --exclude 'htaccess' --exclude '.git' --exclude '.htaccess' --exclude 'deploy.sh' . /net/s7.dheera.net/www/dheeranet/
