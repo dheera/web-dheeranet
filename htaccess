@@ -1,0 +1,8 @@
+# Cleans up urls from mydomain.mit.edu/index.fcgi/blah to mydomain.mit.edu/blah
+# Copy htaccess to .htaccess for first time deployment
+
+RewriteEngine On
+RewriteRule ^$ index.fcgi/ [QSA,L]
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^(.*)$ index.fcgi/$1 [QSA,L]

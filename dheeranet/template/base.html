@@ -1,0 +1,62 @@
+{% set navbar = [
+    ('/about', 'about', 'about'),
+    ('/projects', 'projects', 'projects'),
+    ('/photos', 'photos', 'photos'),
+    ('/contact', 'contact', 'contact'),
+] -%}
+<!doctype html>
+<html lang="en">
+
+<head>
+  {%- block head -%}
+ <title>{% if title %}{% block title %}{% endblock %} | {% endif %}dheera.net | Dheera Venkatraman's web site</title>
+  <meta http-equiv="Content-type" content="text/html;charset=utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
+  <script type="text/javascript" src="http://static.dheera.net/js/jquery-2.0.3.min.js"></script>
+  <script type="text/javascript" src="http://static.dheera.net/js/jquery.swipebox.js"></script>
+  <script type="text/javascript" src="http://static.dheera.net/js/main.js"></script>
+  <link rel="stylesheet" type="text/css" href="http://static.dheera.net/css/main.css">
+  <link rel="stylesheet" type="text/css" href="http://static.dheera.net/css/swipebox.css">
+  <link rel="image_src" href="http://static.dheera.net/images/logo_1000.png">
+  <link rel="shortcut icon" type="image/x-icon" href="http://static.dheera.net/favicon.ico">
+  {%- endblock -%}
+</head>
+
+<body>
+  <div class="topbar">
+    <div style="margin-left:auto;margin-right:auto;max-width:980px;padding:0px;border-lft:0px solid #808080;border-right:0px solid #808080;border-bottom:0px;">
+<ul class="navbar">
+{%- for href, id, caption in navbar -%}
+  <li class="clickable{% if request.path.find(href) == 0 %} navbar_active{% else %} navbar_inactive{% endif
+  %}" onclick="window.location.href='{{ href|e }}'"><a href="{{ href|e }}">{{ caption|e }}</a></li>
+{%- endfor -%}
+</ul>
+<div class="navbar_mobile">
+<select onchange="if(this.value!=='') { $('#loading').show(); window.location.href=this.value; }">
+<option value="/">Home</option>
+{%- for href, id, caption in navbar -%}
+<option{% if request.path.find(href) == 0 %} selected="selected"{% endif
+ %} value="{{ href }}">{{ caption.capitalize()|e }}</option>
+{%- endfor -%}
+</select>
+</div>
+      <div class="logo">
+        <div onclick="window.location.href='/';" class="ui_cover" style="cursor:pointer;cursor:hand;"></div>
+        <object data="http://static.dheera.net/images/logo_web.svg" type="image/svg+xml"><img alt="MIT Sustainability Summit" src="http://static.dheera.net/images/logo_web.png"></object>
+      </div>
+    </div>
+  </div>
+  <div></div>
+
+  <div class="content">{% block content %}{% endblock %}</div>
+  <div class="footer">
+    <div>
+      {%- block footer -%}
+      &copy; Copyright 2014 Dheera Venkatraman. All rights reserved. Questions, comments, or suggestions? Please contact me at <b>dheera at dheera dot net</b>.
+      {%- endblock -%}
+    </div>
+  </div>
+  <div id="loading" class="loading"></div>
+  <div id="preload-01" style="position:fixed;top:-100px;left:-100px;width:1px;height:1px;overflow:hidden;background: url(http://domain.tld/image-01.png) no-repeat -9999px -9999px; }"></div>
+</body>
+</html>
