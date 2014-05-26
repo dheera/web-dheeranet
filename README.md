@@ -1,5 +1,5 @@
-web-sustainabilitysummit
+web-dheeranet
 ========================
 
-New Python-based website for MIT Sustainability Summit
-http://sustainabilitysummit.mit.edu/
+New personal website for dheera.net
+http://dheera.net/
