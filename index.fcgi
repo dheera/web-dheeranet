@@ -10,7 +10,7 @@ except ImportError:
 
 import threading
 from flup.server.fcgi import WSGIServer
-from summit import app
+from dheeranet import app
 
 _mtimes = {}
 def code_changed(): # lovingly stolen from django. See above.
