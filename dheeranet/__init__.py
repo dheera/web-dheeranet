@@ -60,9 +60,6 @@ app.jinja_env.filters['lang'] = lang
 from views.home import home
 app.register_blueprint(home)
 
-from views.pages import pages
-app.register_blueprint(pages)
-
 from views.photos import photos
 app.register_blueprint(photos,url_prefix='/photos')
 
@@ -76,6 +73,9 @@ def send_static_0(filename):
 @app.route('/static/<subdir>/<path:filename>')
 def send_static_1(subdir,filename):
   return redirect('http://static.dheera.net/'+subdir+'/'+filename)
+
+from views.pages import pages
+app.register_blueprint(pages)
 
 @app.after_request
 def add_header(response):

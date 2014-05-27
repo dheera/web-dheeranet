@@ -6,15 +6,20 @@ import json
 
 pages = Blueprint('pages', __name__,template_folder='../template')
 
-@pages.route('/<path>')
-@pages.route('/<path>/')
+@pages.route('/<path:path>')
 def show(path):
   try:
     isHeaderFinished=0
     header_json=''
     content=''
 
+    path = path.strip('/')
     key = objects_bucket.get_key('pages/' + path)
+    if not key:
+      key = objects_bucket.get_key('pages/' + path + '/index')
+      if not key:
+        abort(404)
+
     content = key.get_contents_as_string().decode('utf-8')
 #    with open('pages/' + pages) as fp:
 #      for line in fp:
