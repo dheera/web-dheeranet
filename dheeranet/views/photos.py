@@ -1,69 +1,94 @@
 from flask import Blueprint, render_template, abort, Response, send_file, send_from_directory
 from jinja2 import TemplateNotFound
 from subprocess import call
+from dheeranet import static_bucket
 from dheeranet import photos_bucket
+from dheeranet.slugify import slugify
+from boto.s3.key import Key
 import os, glob
 import json
-
-PHOTOS_DIR = 'dheeranet/static/photos'
-CACHE_DIR = 'dheeranet/static/cache'
+from hashlib import sha1
 
 photos = Blueprint('photos', __name__,template_folder='../template')
 
-@photos.route('/<album>/<photo>/<size>')
-def get_photo_resized(album,photo,size):
-  allowed_sizes = ['154x154','300x200','600x400']
+#@photos.route('/<album>/<photo>/<size>')
+#def get_photo_resized(album,photo,size):
+#  allowed_sizes = ['154x154','300x200','600x400']
+#
+#  if '..' in album or album.startswith('/'):
+#    abort(404)
+#  if '..' in photo or photo.startswith('/'):
+#    abort(404)
+#  if size not in allowed_sizes:
+#    abort(404)
+#
+#  image_file = PHOTOS_DIR + '/' + album + '/' + photo
+#  thumb_file = CACHE_DIR + '/photos-'+slugify(album+'-'+photo)+'-'+size+'.jpg'
+#  thumb_url = 'static/cache/photos-'+slugify(album+'-'+photo)+'-'+size+'.jpg'
+#
+#  if not os.path.exists(thumb_file):
+#    call(["convert", "-strip", image_file, "-thumbnail", size+"^", "-gravity", "center", "-quality", "83", "-extent", size, thumb_file])
+#
+#  return send_file('../'+thumb_file)
 
-  if '..' in album or album.startswith('/'):
-    abort(404)
-  if '..' in photo or photo.startswith('/'):
-    abort(404)
-  if size not in allowed_sizes:
-    abort(404)
 
-  image_file = PHOTOS_DIR + '/' + album + '/' + photo
-  thumb_file = CACHE_DIR + '/photos-'+slugify(album+'-'+photo)+'-'+size+'.jpg'
-  thumb_url = 'static/cache/photos-'+slugify(album+'-'+photo)+'-'+size+'.jpg'
+#@photos.route('/<album>/<photo>')
+#def get_photo(album,photo):
+#  if '..' in album or album.startswith('/'):
+#    abort(404)
+#  if '..' in photo or photo.startswith('/'):
+#    abort(404)
+#
+#  image_file = PHOTOS_DIR + '/' + album + '/' + photo
+#  return send_file('../' + image_file)
 
-  if not os.path.exists(thumb_file):
-    call(["convert", "-strip", image_file, "-thumbnail", size+"^", "-gravity", "center", "-quality", "83", "-extent", size, thumb_file])
+def get_resized_url(filename,width,height,full=0):
+  original_key = photos_bucket.get_key(filename)
 
-  return send_file('../'+thumb_file)
+  if not original_key:
+    print 'Error'
+    return 'http://static.dheera.net/images/blank.gif'
 
+  size = str(width) + 'x' + str(height)
 
-@photos.route('/<album>/<photo>')
-def get_photo(album,photo):
-  if '..' in album or album.startswith('/'):
-    abort(404)
-  if '..' in photo or photo.startswith('/'):
-    abort(404)
+  resized_filename = 'cache/%s-%s-%s-%s.jpg' % (sha1('photos/' + filename + '/').hexdigest(), width, height, full)
+  resized_url = 'http://static.dheera.net/' + resized_filename
 
-  image_file = PHOTOS_DIR + '/' + album + '/' + photo
-  return send_file('../' + image_file)
+  resized_key = static_bucket.get_key(resized_filename)
+
+  print resized_filename
+  print resized_url
+
+  if not resized_key:
+    resized_key = Key(static_bucket)
+    resized_key.key = resized_filename
+
+    original_tempfilename = '/tmp/foo_original.jpg'
+    original_key.get_contents_to_filename(original_tempfilename)
+
+    resized_tempfilename = '/tmp/foo_resized.jpg'
+
+    call(["convert", "-strip", original_tempfilename, "-thumbnail", size+"^", "-gravity", "center", "-quality", "83", "-extent", size, resized_tempfilename])
+
+    resized_key.set_contents_from_filename(resized_tempfilename)
+
+  return resized_url
 
 @photos.route('/', defaults={'album': ''})
-@photos.route('/<album>')
-def show(year):
-  dirs = [ name for name in os.listdir(PHOTOS_DIR) if os.path.isdir(os.path.join(PHOTOS_DIR, name)) ]
-
-  dirs = list(photos_bucket.list('','/'))   
-
-  subnavbar = [ ('/photos/'+name, name, name) for name in sorted(dirs,reverse=True) ]
-
-  if year=='':
-    year = subnavbar[0][1]
-  else:
-    if not album in dirs:
-      abort(404)
-
+@photos.route('/<path:album>')
+def show(album):
   content = ''
+  album_files = photos_bucket.list(album+'/','/')
+  for key in album_files:
+    filename = key.name.encode('utf-8')
+    if filename[-4:] == '.jpg':
 
-  for image_file in glob.glob("%s/%s/*.jpg" % (PHOTOS_DIR,album)):
-    image_url = '/photos' + image_file.replace(PHOTOS_DIR,'')
-    thumb_url = image_url + '/154x154'
+      download_url = 'http://photos.dheera.net/' + filename
+      display_url = get_resized_url(filename,width=1024,height=680,full=1)
+      thumb_url = get_resized_url(filename,width=140,height=140)
 
-    content += "<div class=\"photos_thumbnail clickable\">"
-    content += "<a title=\"\" class=\"swipebox\" href=\"%s\"><img src=\"%s\"></a>" % (image_url, thumb_url)
-    content += "</div> " # trailing space after </div> is important! we are using inline-block
+      content += "<div class=\"photos_thumbnail clickable\">"
+      content += '<a href="%s"><img src="%s" width="100" height="100"></a> ' % (download_url, thumb_url)
+      content += "</div> "
 
-  return render_template('page.html',title='Photos',content=content,subnavbar=subnavbar,subnavbar_current=album)
+  return render_template('page.html',title='Photos',content=content)
