@@ -32,16 +32,16 @@ def show(album):
     filename = key.name.encode('utf-8').replace(album+'/web-1024/','')
     if filename[-4:] == '.jpg':
 
-      display_url = 'http://photos.dheera.net/' + album + '/web-1024/' + filename
-      download_url = 'http://photos.dheera.net/' + album + '/' + filename
-      thumb_url = 'http://photos.dheera.net/thumb/' + PHOTOS_THUMB_SIZE + '/' + album + '/' + filename
+      display_url = "http://photos.dheera.net/%s/web-1024/%s" % (album, filename)
+      download_url = "http://photos.dheera.net/%s/original/%s" % (album, filename)
+      thumb_url = "http://photos.dheera.net/%s/thumb-%s-%s/%s" % (album, PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT, filename)
 
       if not filename in thumbs:
         print 'Creating thumbnail for '+filename
         original_tempfilename = '/tmp/foo_original.jpg'
         key.get_contents_to_filename(original_tempfilename)
         resized_tempfilename = '/tmp/foo_resized.jpg'
-        call(["convert", "-strip", original_tempfilename, "-thumbnail", PHOTOS_THUMB_SIZE + "^", "-gravity", "center", "-sharpen", "0x0.7", "-extent", PHOTOS_THUMB_SIZE, resized_tempfilename])
+        call(["convert", "-strip", original_tempfilename, "-thumbnail", PHOTOS_THUMB_SIZE + "^", "-gravity", "center", "-sharpen", "0x0.5", "-quality", "85", "-extent", PHOTOS_THUMB_SIZE, resized_tempfilename])
         resized_key = Key(photos_bucket)
         resized_key.key = 'thumb/' + PHOTOS_THUMB_SIZE + '/' + album + '/' + filename
         resized_key.set_contents_from_filename(resized_tempfilename)
