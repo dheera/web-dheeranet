@@ -19,14 +19,15 @@ photos = Blueprint('photos', __name__,template_folder='../template')
 @photos.route('/<path:album>')
 def show(album):
   content = ''
+  album = album.strip('/')
 
   album_files = photos_bucket.list(album+'/web-1024/','/')
-  thumb_files = photos_bucket.list('thumb/' + PHOTOS_THUMB_SIZE + '/' + album + '/','/')
+  thumb_files = photos_bucket.list(album+'/thumb-'+PHOTOS_THUMB_WIDTH+'-'+PHOTOS_THUMB_HEIGHT+'/','/')
 
   thumbs=list()
 
   for key in thumb_files:
-    thumbs.append(key.name.encode('utf-8').replace('thumb/' + PHOTOS_THUMB_SIZE + '/' + album + '/',''))
+    thumbs.append(key.name.encode('utf-8').replace(album+'/thumb-'+PHOTOS_THUMB_WIDTH+'-'+PHOTOS_THUMB_HEIGHT+'/',''))
 
   for key in album_files:
     filename = key.name.encode('utf-8').replace(album+'/web-1024/','')
@@ -41,9 +42,9 @@ def show(album):
         original_tempfilename = '/tmp/foo_original.jpg'
         key.get_contents_to_filename(original_tempfilename)
         resized_tempfilename = '/tmp/foo_resized.jpg'
-        call(["convert", "-strip", original_tempfilename, "-thumbnail", PHOTOS_THUMB_SIZE + "^", "-gravity", "center", "-sharpen", "0x0.5", "-quality", "85", "-extent", PHOTOS_THUMB_SIZE, resized_tempfilename])
+        call(["convert", "-strip", original_tempfilename, "-thumbnail", PHOTOS_THUMB_SIZE + "^", "-gravity", "center", "-sharpen", "0x0.5", "-quality", "80", "-extent", PHOTOS_THUMB_SIZE, resized_tempfilename])
         resized_key = Key(photos_bucket)
-        resized_key.key = 'thumb/' + PHOTOS_THUMB_SIZE + '/' + album + '/' + filename
+        resized_key.key = thumb_url.replace('http://photos.dheera.net/','')
         resized_key.set_contents_from_filename(resized_tempfilename)
 
       content += "<div class=\"photos_thumbnail clickable\">"
