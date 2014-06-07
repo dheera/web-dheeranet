@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import Flask,request,render_template,send_file,send_from_directory,redirect
+from flask import Flask, request, render_template, send_file, send_from_directory, redirect
 from jinja2 import Markup
 from boto.s3.connection import S3Connection
 import re
@@ -79,20 +79,20 @@ from views.pages import pages
 app.register_blueprint(pages)
 
 @app.after_request
-def add_header(response):
-  if(response.headers['Content-Type'].find('image/')==0):
-    # tell client to cache images for 2 hours
+def after_request(response):
+  if response.headers['Content-Type'].find('image/')==0:
     response.headers['Cache-Control'] = 'max-age=7200, must-revalidate'
     response.headers['Expires'] = '0'
-  elif(response.headers['Content-Type'].find('application/')==0):
-    # tell client to cache downloads for 2 hours
+  elif response.headers['Content-Type'].find('application/')==0:
     response.headers['Cache-Control'] = 'max-age=7200, must-revalidate'
     response.headers['Expires'] = '0'
   else:
-    # tell client to cache everything else (especially text/html) for 5 minutes only
-    # in case urgent updates to content need to be made
-    response.headers['Cache-Control'] = 'max-age=300, must-revalidate'
+    response.headers['Cache-Control'] = 'no-cache, must-revalidate'
     response.headers['Expires'] = '0'
+
+  if 'lang' in request.args:
+    response.set_cookie('lang', request.args['lang'])
+
   return response
 
 if __name__ == '__main__':
