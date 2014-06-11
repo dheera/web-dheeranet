@@ -31,7 +31,7 @@ def show(album):
 
   for key in album_files:
     filename = key.name.encode('utf-8').replace(album+'/web-1024/','')
-    if filename[-4:] == '.jpg':
+    if filename.endswith('.jpg'):
 
       display_url = "http://photos.dheera.net/%s/web-1024/%s" % (album, filename)
       download_url = "http://photos.dheera.net/%s/original/%s" % (album, filename)
