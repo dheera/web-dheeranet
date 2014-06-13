@@ -3,7 +3,6 @@ from jinja2 import TemplateNotFound
 from dheeranet import objects_bucket
 from dheeranet.cache import cache
 from ast import literal_eval
-
 import json
 
 pages = Blueprint('pages', __name__,template_folder='../template')
@@ -52,8 +51,8 @@ def show(path):
     if not subnavbar:
       subnavbar = '[]'
       
-    params, content = page.split('\n\n',1);
-    params = literal_eval(params)
+    params_json, content = page.split('\n\n',1);
+    params = json.loads(params_json)
 
     if 'title' not in params:
       params['title'] = ''
