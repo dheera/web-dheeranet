@@ -4,21 +4,27 @@
 <div class="content_page">
   <div>
     {%- if subnavbar -%}
+    <div style="display:inline-block">
+      <h1 class="content_title">{{ title|lang|e }}</h1>
+    </div><div style="display:inline-block">
       <ul class="subnavbar">
       {%- for href, id, caption in subnavbar -%}
-        <li{% if id == subnavbar_current %} class="subnavbar_active"{% endif %}><a href="{{ href|e }}">{{ caption|e }}</a></li>
+        <li{% if href==request.path %} class="subnavbar_active"{% endif %}><a href="{{ href|e }}">{{ caption|lang|e }}</a></li>
       {%- endfor -%}
       </ul>
-      <div class="subnavbar_mobile">
+    </div>
+    <div class="subnavbar_mobile">
         <select onchange="if(this.value!=='') { $('#loading').show(); window.location.href=this.value; }">
         {%- for href, id, caption in subnavbar -%}
-          <option value="{{ href }}"{% if id == subnavbar_current %} selected="selected"{% endif %}>{{ caption|e }}</option>
+          <option value="{{ href }}"{% if href==request.path %} selected="selected"{% endif %}>{{ caption|lang|e }}</option>
         {%- endfor -%}
         </select>
-      </div>
+    </div>
+    {% else %}
+      <h1 class="content_title">{{ title|lang|e }}
     {%- endif -%}
-    <h1 class="content_title">{{ title|lang }}</h1>
-  </div>
+    </h1>
+  </div><br><br>
   <div>
     {{ content|lang|safe }}
   </div>
