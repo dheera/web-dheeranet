@@ -2,6 +2,7 @@ from flask import Blueprint, render_template, abort, Response, send_file, send_f
 from jinja2 import TemplateNotFound
 from subprocess import call
 from dheeranet import static_bucket
+from dheeranet.cache import cache
 from dheeranet.slugify import slugify
 from boto.s3.key import Key
 import os, glob
@@ -20,34 +21,58 @@ def show(album):
   content = ''
   album = album.strip('/')
 
-  album_files = static_bucket.list('photos/'+album+'/web-1024/','/')
-  thumb_files = static_bucket.list('photos/'+album+'/thumb-'+PHOTOS_THUMB_WIDTH+'-'+PHOTOS_THUMB_HEIGHT+'/','/')
+  album_info = album_get_info(album)
+  if not album_info:
+    abort(404)
 
-  thumbs=list()
+  album_filenames = album_get_filenames(album)
 
-  for key in thumb_files:
-    thumbs.append(key.name.encode('utf-8').replace('photos/'+album+'/thumb-'+PHOTOS_THUMB_WIDTH+'-'+PHOTOS_THUMB_HEIGHT+'/',''))
+  for filename in album_filenames:
 
-  for key in album_files:
-    filename = key.name.encode('utf-8').replace('photos/'+album+'/web-1024/','')
     if filename.endswith('.jpg'):
 
-      display_url = "http://static.dheera.net/photos/%s/web-1024/%s" % (album, filename)
-      download_url = "http://static.dheera.net/photos/%s/original/%s" % (album, filename)
-      thumb_url = "http://static.dheera.net/photos/%s/thumb-%s-%s/%s" % (album, PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT, filename)
-
-      if not filename in thumbs:
-        print 'Creating thumbnail for '+filename
-        original_tempfilename = '/tmp/foo_original.jpg'
-        key.get_contents_to_filename(original_tempfilename)
-        resized_tempfilename = '/tmp/foo_resized.jpg'
-        call(["convert", "-strip", original_tempfilename, "-thumbnail", PHOTOS_THUMB_SIZE + "^", "-gravity", "center", "-sharpen", "0x0.5", "-quality", "80", "-extent", PHOTOS_THUMB_SIZE, resized_tempfilename])
-        resized_key = Key(static_bucket)
-        resized_key.key = thumb_url.replace('http://static.dheera.net/','')
-        resized_key.set_contents_from_filename(resized_tempfilename)
+      display_url = album_get_display_url(album,filename)
+      download_url = album_get_download_url(album,filename)
+      thumb_url = album_get_thumb_url(album,filename)
 
       content += "<div class=\"photos_thumbnail clickable\">"
       content += '<a href="%s"><img data-download="%s" src="%s" width="%s" height="%s"></a>' % (display_url, download_url, thumb_url, PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
       content += "</div> "
 
-  return render_template('page.html',title='Photos',content=content)
+  return render_template('page.html',title=album_info['title'],content=content)
+
+def album_get_info(album):
+  info_json = cache.get('photos:info:' + album)
+  if not info_json:
+    info_key = static_bucket.get_key('photos/'+album+'/info')
+    if info_key:
+      info_json = info_key.get_contents_as_string().decode('utf-8')
+      cache.set('photos:info:' + album, info_json)
+    else:
+      return None
+
+  info = json.loads(info_json)
+  return info
+
+def album_get_filenames(album):
+  filenames = ()
+  filenames_json = cache.get('photos:filenames:' + album)
+
+  if filenames_json:
+    filenames = json.loads(filenames_json)
+  else:
+    filenames = static_bucket.list('photos/'+album+'/web-1024/','/')
+    filenames = map(lambda(k): k.name.encode('utf-8'), filenames)
+    filenames = map(lambda(s): s[s.rfind('/')+1:], filenames)
+    cache.set('photos:filenames:' + album, json.dumps(filenames))
+
+  return filenames
+
+def album_get_display_url(album,filename):
+  return "http://static.dheera.net/photos/%s/web-1024/%s" % (album, filename)
+
+def album_get_download_url(album,filename):
+  return "http://static.dheera.net/photos/%s/original/%s" % (album, filename)
+
+def album_get_thumb_url(album,filename):
+  return "http://static.dheera.net/photos/%s/thumb-%s-%s/%s" % (album, PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT, filename)
