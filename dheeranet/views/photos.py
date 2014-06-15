@@ -24,19 +24,7 @@ photos = Blueprint('photos', __name__,template_folder='../template')
 
 @photos.route('/')
 def show():
-  content = ''
-
-  featured_json = cache.get('photos:featured')
-  if not featured_json:
-    featured_key = PHOTOS_BUCKET.get_key('photos/featured')
-    if featured_key:
-      featured_json = featured_key.get_contents_as_string().decode('utf-8')
-      cache.set('photos:featured', featured_json)
-
-  featured = json.loads(featured_json)
-
-  for featured_section in featured:
-    content += '<h2>%s</h2>' % featured_section['title']
+  content = generate_photos_home()
 
   return render_template('page.html',title='{|en:photos|zh:相冊|}',content=content)
 
@@ -64,6 +52,16 @@ def show_album(album):
       content += "</div> "
 
   return render_template('page.html',title=album_info['title'],content=content)
+
+@cached()
+def generate_photos_home():
+  content = ''
+  featured_key = PHOTOS_BUCKET.get_key('photos/featured')
+  featured = json.loads(featured_key.get_contents_as_string().decode('utf-8'))
+
+  for featured_section in featured:
+    content += '<h2>%s</h2>' % featured_section['title']
+  return content
 
 @cached()
 def album_get_info(album):
