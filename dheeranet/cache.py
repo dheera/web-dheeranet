@@ -1,9 +1,13 @@
 from flask import Flask,request
-from werkzeug.contrib.cache import FileSystemCache
+from werkzeug.contrib.cache import FileSystemCache, NullCache
+from dheeranet import app
 import marshal
 
 CACHE_TIMEOUT = 3600
-cache = FileSystemCache('dheeranet/cache')
+if app.debug:
+  cache = NullCache()
+else:
+  cache = FileSystemCache('dheeranet/cache')
 
 class cached(object):
   def __init__(self, timeout=None):

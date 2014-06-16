@@ -40,13 +40,10 @@ def show_album(album):
   album_filenames = album_get_filenames(album)
 
   for filename in album_filenames:
-
     if filename.endswith('.jpg'):
-
       display_url = album_get_display_url(album,filename)
       download_url = album_get_download_url(album,filename)
       thumb_url = album_get_thumb_url(album,filename)
-
       content += "<div class=\"photos_thumbnail clickable\">"
       content += '<a href="%s"><img data-download="%s" src="%s" width="%s" height="%s"></a>' % (display_url, download_url, thumb_url, PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
       content += "</div> "
@@ -56,24 +53,34 @@ def show_album(album):
 @cached()
 def generate_photos_home():
   content = ''
-  featured_key = PHOTOS_BUCKET.get_key('photos/featured')
-  featured = json.loads(featured_key.get_contents_as_string().decode('utf-8'))
+  index_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + '__index__')
+  index = json.loads(index_key.get_contents_as_string().decode('utf-8'))
 
-  for featured_section in featured:
-    content += '<h2>%s</h2>' % featured_section['title']
+  for index_section in index:
+    content += '<h2>%s</h2>' % index_section['title']
+    if 'show' not in index_section:
+      subpaths = PHOTOS_BUCKET.list(PHOTOS_PREFIX + index_section['path'] + '/', '/')
+      subpaths = map(lambda(k): k.name.encode('utf-8'), subpaths)
+      subpaths = map(lambda(s): s[s.rfind('/')+1:], subpaths)
+      for subpath in subpaths:
+          content += '<h3>%s</h3>' % subpath
   return content
 
 @cached()
 def album_get_info(album):
-  info_key = PHOTOS_BUCKET.get_key('photos/'+album+'/info')
+  info_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/__info__')
   if info_key:
     return json.loads(info_key.get_contents_as_string().decode('utf-8'))
   else:
-    return None
+    test_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/')
+    if test_key:
+      return { "title":album }
+    else:
+      return None
 
 @cached()
 def album_get_filenames(album):
-  filenames = PHOTOS_BUCKET.list('photos/'+album+'/web-1024/','/')
+  filenames = PHOTOS_BUCKET.list(PHOTOS_PREFIX + album + '/web-1024/', '/')
   filenames = map(lambda(k): k.name.encode('utf-8'), filenames)
   filenames = map(lambda(s): s[s.rfind('/')+1:], filenames)
   return filenames
