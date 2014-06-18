@@ -89,36 +89,41 @@ def album_get_filenames(album,pic_format = PHOTOS_FORMAT_ORIGINAL):
   return filenames
 
 def album_get_url(album,filename,pic_format=PHOTOS_FORMAT_ORIGINAL):
-  return "http://{bucket_name}/{prefix}{album}/{pic_format}/{filename}".format(
-    'bucket_name' = PHOTOS_BUCKET_NAME,
-    'prefix' = PHOTOS_PREFIX,
-    'album' = album,
-    'pic_format' = pic_format
-    'filename' = filename)
+  return "http://{bucket_name}/{prefix}{album}/{pic_format}/{filename}".format({
+    'bucket_name': PHOTOS_BUCKET_NAME,
+    'prefix': PHOTOS_PREFIX,
+    'album': album,
+    'pic_format': pic_format,
+    'filename': filename,
+  })
 
-def album_get_photo(album,filename,local_filename,pic_format = PHOTOS_FORMAT_ORIGINAL):
-  key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
+def album_get_key(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL, create = False):
+  key_name = PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename
+  key = PHOTOS_BUCKET.get_key(key_name)
+  if create and not key:
+    key = PHOTOS_BUCKET.new_key(key_name)
+  return key
+    
 
+def album_get_photo(album, filename, local_filename, pic_format = PHOTOS_FORMAT_ORIGINAL):
+  key = album_get_key(album, filename, pic_format)
   if key:
     key.get_contents_to_filename(local_filename)
-
   else:
     raise Exception("Nonexistent photo")
 
-def album_put_photo(album,filename,local_filename,pic_format):
+def album_put_photo(album, filename, local_filename, pic_format):
 
   # re-generatable formats, can overwrite, use reduced redundancy storage
   if pic_format in (PHOTOS_FORMAT_LARGE, PHOTOS_FORMAT_SMALL, PHOTOS_FORMAT_THUMB):
-    key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
-    if not key:
-      key = PHOTOS_BUCKET.new_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
+    key = album_get_key(album, filename, pic_format = pic_format, create = True)
     key.set_contents_from_filename(local_filename, reduced_redundancy = True)
 
   # don't overwrite existing originals, use normal S3 storage
   elif pic_format == PHOTOS_FORMAT_ORIGINAL:
-    key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
+    key = album_get_key(album, filename, pic_format = pic_format, create = False)
     if not key:
-      key = PHOTOS_BUCKET.new_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
+      key = album_get_key(album, filename, pic_format = pic_format, create = True)
       key.set_contents_from_filename(local_filename)
 
   else:
