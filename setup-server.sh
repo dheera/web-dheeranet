@@ -1,5 +1,5 @@
 #!/bin/sh
-sudo apt-get install lighttpd python-pip imagemagick git exiftool
+sudo apt-get install lighttpd python-pip imagemagick graphicsmagick git exiftool
 sudo pip install boto flup django flask
 sudo lighty-enable-mod fastcgi
 sudo mkdir /www
