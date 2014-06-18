@@ -7,7 +7,7 @@ from subprocess import call
 from dheeranet import static_bucket
 from dheeranet.cache import cache, cached
 from dheeranet.slugify import slugify
-from boto.s3.key import Key
+from boto.s3.key import Key, new_key
 import os, glob
 import json
 from hashlib import sha1
@@ -15,10 +15,17 @@ from hashlib import sha1
 PHOTOS_BUCKET = static_bucket
 PHOTOS_BUCKET_NAME = 'static.dheera.net'
 PHOTOS_PREFIX = 'photos/'
-PHOTOS_THUMB_WIDTH = '140'
-PHOTOS_THUMB_HEIGHT = '140'
+PHOTOS_THUMB_WIDTH = 140
+PHOTOS_THUMB_HEIGHT = 140
+PHOTOS_SMALL_WIDTH = 1024
+PHOTOS_LARGE_WIDTH = 2048
+PHOTOS_EXIF_AUTHOR = 'Dheera Venkatraman | http://dheera.net'
 
-PHOTOS_THUMB_SIZE = PHOTOS_THUMB_WIDTH + 'x' + PHOTOS_THUMB_HEIGHT
+PHOTOS_FORMAT_ORIGINAL = 'original'
+PHOTOS_FORMAT_SMALL = 'web-%d' % PHOTOS_SMALL_WIDTH
+PHOTOS_FORMAT_LARGE = 'web-%d' % PHOTOS_LARGE_WIDTH
+PHOTOS_FORMAT_THUMB = 'thumb-%d-%d' % (PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
+PHOTOS_THUMB_SIZE = '%dx%d' % (PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
 
 photos = Blueprint('photos', __name__,template_folder='../template')
 
@@ -79,17 +86,42 @@ def album_get_info(album):
       return None
 
 @cached()
-def album_get_filenames(album):
-  filenames = PHOTOS_BUCKET.list(PHOTOS_PREFIX + album + '/web-1024/', '/')
+def album_get_filenames(album,pic_format = PHOTOS_FORMAT_ORIGINAL):
+  filenames = PHOTOS_BUCKET.list(PHOTOS_PREFIX + album + '/' + pic_format + '/', '/')
   filenames = map(lambda(k): k.name.encode('utf-8'), filenames)
   filenames = map(lambda(s): s[s.rfind('/')+1:], filenames)
   return filenames
 
 def album_get_display_url(album,filename):
-  return "http://%s/%s%s/web-1024/%s" % (PHOTOS_BUCKET_NAME, PHOTOS_PREFIX, album, filename)
+  return "http://%s/%s%s/%s/%s" % (PHOTOS_BUCKET_NAME, PHOTOS_PREFIX, album, PHOTOS_FORMAT_SMALL, filename)
 
 def album_get_download_url(album,filename):
-  return "http://%s/%s%s/original/%s" % (PHOTOS_BUCKET_NAME, PHOTOS_PREFIX, album, filename)
+  return "http://%s/%s%s/%s/%s" % (PHOTOS_BUCKET_NAME, PHOTOS_PREFIX, album, PHOTOS_FORMAT_ORIGINAL, filename)
 
 def album_get_thumb_url(album,filename):
-  return "http://%s/%s%s/thumb-%s-%s/%s" % (PHOTOS_BUCKET_NAME, PHOTOS_PREFIX, album, PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT, filename)
+  return "http://%s/%s%s/%s/%s" % (PHOTOS_BUCKET_NAME, PHOTOS_PREFIX, album, PHOTOS_FORMAT_THUMB, filename)
+
+def album_get_photo(album,filename,local_filename,pic_format = PHOTOS_FORMAT_ORIGINAL):
+  key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
+
+  if key:
+    key.get_contents_to_filename(local_filename)
+
+  else:
+    raise Exception("Nonexistent photo")
+
+def album_put_photo(album,filename,local_filename,pic_format):
+
+  # re-generatable formats, can overwrite, use reduced redundancy storage
+  if pic_format in (PHOTOS_FORMAT_LARGE, PHOTOS_FORMAT_SMALL, PHOTOS_FORMAT_THUMB):
+    key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
+    key.set_contents_from_filename(local_filename, reduced_redundancy == True)
+
+  # don't overwrite existing originals, use normal S3 storage
+  elif pic_format == PHOTOS_FORMAT_ORIGINAL:
+    key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
+    if not key:
+      key.set_contents_from_filename(local_filename)
+
+  else:
+    raise Exception("Invalid picture format: " + pic_format)
