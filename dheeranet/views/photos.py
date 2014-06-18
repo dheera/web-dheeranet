@@ -7,7 +7,7 @@ from subprocess import call
 from dheeranet import static_bucket
 from dheeranet.cache import cache, cached
 from dheeranet.slugify import slugify
-from boto.s3.key import Key, new_key
+from boto.s3.key import Key
 import os, glob
 import json
 from hashlib import sha1
