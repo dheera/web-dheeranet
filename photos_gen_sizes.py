@@ -31,17 +31,17 @@ for filename in filenames_original:
 
       photos.album_get_photo(album, filename, '/tmp/foo_original.jpg')
 
-      # resize it
+      # scale it
       print '...'
       call(['nice', 'convert',
-           '-resize', str(photos.PHOTOS_SMALL_WIDTH*3/2),
+           '-scale', str(photos.PHOTOS_SMALL_WIDTH*3/2),
            '-sharpen', '0x1',
            '/tmp/foo_original.jpg', '/tmp/foo.bmp']);
 
       print '...'
       call(['nice', 'convert',
            '-strip',
-           '-resize', str(photos.PHOTOS_SMALL_WIDTH),
+           '-scale', str(photos.PHOTOS_SMALL_WIDTH),
            '/tmp/foo.bmp', '/tmp/foo.bmp']);
 
       # get mean and std of region to be watermarked
@@ -66,16 +66,16 @@ for filename in filenames_original:
            '-gravity', 'SouthWest',
            '-quality', '94',
            '-compose', 'over', watermark_file,
-           '/tmp/foo.bmp', '/tmp/foo_resized.jpg']);
+           '/tmp/foo.bmp', '/tmp/foo_scaled.jpg']);
 
       print '...'
       call(['exiftool',
            '-overwrite_original',
            '-Author=\"%s\"' % photos.PHOTOS_EXIF_AUTHOR,
-           '/tmp/foo_resized.jpg']);
+           '/tmp/foo_scaled.jpg']);
 
       # put image
-      photos.album_put_photo(album, filename, '/tmp/foo_resized.jpg', pic_format=photos.PHOTOS_FORMAT_SMALL)
+      photos.album_put_photo(album, filename, '/tmp/foo_scaled.jpg', pic_format=photos.PHOTOS_FORMAT_SMALL)
 
     if not filename in filenames_large:
       print("missing large for %s" % filename)
@@ -84,18 +84,18 @@ for filename in filenames_original:
 
       photos.album_get_photo(album, filename, '/tmp/foo_original.jpg')
 
-      # resize it
+      # scale it
 
       print '...'
       call(['nice', 'convert',
-           '-resize', str(photos.PHOTOS_LARGE_WIDTH*3/2),
+           '-scale', str(photos.PHOTOS_LARGE_WIDTH*3/2),
            '-sharpen', '0x1',
            '/tmp/foo_original.jpg', '/tmp/foo.bmp']);
 
       print '...'
       call(['nice', 'convert',
            '-strip',
-           '-resize', str(photos.PHOTOS_LARGE_WIDTH),
+           '-scale', str(photos.PHOTOS_LARGE_WIDTH),
            '/tmp/foo.bmp', '/tmp/foo.bmp']);
 
       # get mean and std of region to be watermarked
@@ -120,16 +120,16 @@ for filename in filenames_original:
            '-gravity', 'SouthWest',
            '-quality', '94',
            '-compose', 'over', watermark_file,
-           '/tmp/foo.bmp', '/tmp/foo_resized.jpg']);
+           '/tmp/foo.bmp', '/tmp/foo_scaled.jpg']);
 
       print '...'
       call(['exiftool',
            '-overwrite_original',
            '-Author=\"%s\"' % photos.PHOTOS_EXIF_AUTHOR,
-           '/tmp/foo_resized.jpg']);
+           '/tmp/foo_scaled.jpg']);
 
       # put image
-      photos.album_put_photo(album, filename, '/tmp/foo_resized.jpg', pic_format=photos.PHOTOS_FORMAT_LARGE)
+      photos.album_put_photo(album, filename, '/tmp/foo_scaled.jpg', pic_format=photos.PHOTOS_FORMAT_LARGE)
 
     if not filename in filenames_thumb:
       print("missing thumb for %s" % filename)
