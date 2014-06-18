@@ -32,12 +32,13 @@ for filename in filenames_original:
       photos.album_get_photo(album, filename, '/tmp/foo_original.jpg')
 
       # resize it
-
+      print '...'
       call(['nice', 'convert',
            '-resize', str(photos.PHOTOS_SMALL_WIDTH*3/2),
            '-sharpen', '0x1',
            '/tmp/foo_original.jpg', '/tmp/foo.bmp']);
 
+      print '...'
       call(['nice', 'convert',
            '-strip',
            '-resize', str(photos.PHOTOS_SMALL_WIDTH),
@@ -45,6 +46,7 @@ for filename in filenames_original:
 
       # get mean and std of region to be watermarked
 
+      print '...'
       (mean, std) = map(float, check_output(['nice', 'identify',
            '-crop', '300x100+0+0',
            '-format', '%[mean] %[standard-deviation]',
@@ -59,12 +61,14 @@ for filename in filenames_original:
 
       # composite watermark
 
+      print '...'
       call(['nice', 'composite',
            '-gravity', 'SouthWest',
            '-quality', '94',
            '-compose', 'over', watermark_file,
            '/tmp/foo.bmp', '/tmp/foo_resized.jpg']);
 
+      print '...'
       call(['exiftool',
            '-overwrite_original',
            '-Author=\"%s\"' % photos.PHOTOS_EXIF_AUTHOR,
@@ -82,11 +86,13 @@ for filename in filenames_original:
 
       # resize it
 
+      print '...'
       call(['nice', 'convert',
            '-resize', str(photos.PHOTOS_LARGE_WIDTH*3/2),
            '-sharpen', '0x1',
            '/tmp/foo_original.jpg', '/tmp/foo.bmp']);
 
+      print '...'
       call(['nice', 'convert',
            '-strip',
            '-resize', str(photos.PHOTOS_LARGE_WIDTH),
@@ -94,6 +100,7 @@ for filename in filenames_original:
 
       # get mean and std of region to be watermarked
 
+      print '...'
       (mean, std) = map(float, check_output(['nice', 'identify',
            '-crop', '300x100+0+0',
            '-format', '%[mean] %[standard-deviation]',
@@ -108,12 +115,14 @@ for filename in filenames_original:
 
       # composite watermark
 
+      print '...'
       call(['nice', 'composite',
            '-gravity', 'SouthWest',
            '-quality', '94',
            '-compose', 'over', watermark_file,
            '/tmp/foo.bmp', '/tmp/foo_resized.jpg']);
 
+      print '...'
       call(['exiftool',
            '-overwrite_original',
            '-Author=\"%s\"' % photos.PHOTOS_EXIF_AUTHOR,

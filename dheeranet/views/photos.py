@@ -79,11 +79,7 @@ def album_get_info(album):
   if info_key:
     return json.loads(info_key.get_contents_as_string().decode('utf-8'))
   else:
-    test_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/')
-    if test_key:
-      return { "title":album }
-    else:
-      return None
+    return None
 
 @cached()
 def album_get_filenames(album,pic_format = PHOTOS_FORMAT_ORIGINAL):
