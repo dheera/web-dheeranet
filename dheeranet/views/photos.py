@@ -48,9 +48,9 @@ def show_album(album):
 
   for filename in album_filenames:
     if filename.endswith('.jpg'):
-      display_url = album_get_display_url(album,filename)
-      download_url = album_get_download_url(album,filename)
-      thumb_url = album_get_thumb_url(album,filename)
+      display_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL)
+      download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL)
+      thumb_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB)
       content += "<div class=\"photos_thumbnail clickable\">"
       content += '<a href="%s"><img data-download="%s" src="%s" width="%s" height="%s"></a>' % (display_url, download_url, thumb_url, PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
       content += "</div> "
@@ -88,14 +88,13 @@ def album_get_filenames(album,pic_format = PHOTOS_FORMAT_ORIGINAL):
   filenames = map(lambda(s): s[s.rfind('/')+1:], filenames)
   return filenames
 
-def album_get_display_url(album,filename):
-  return "http://%s/%s%s/%s/%s" % (PHOTOS_BUCKET_NAME, PHOTOS_PREFIX, album, PHOTOS_FORMAT_SMALL, filename)
-
-def album_get_download_url(album,filename):
-  return "http://%s/%s%s/%s/%s" % (PHOTOS_BUCKET_NAME, PHOTOS_PREFIX, album, PHOTOS_FORMAT_ORIGINAL, filename)
-
-def album_get_thumb_url(album,filename):
-  return "http://%s/%s%s/%s/%s" % (PHOTOS_BUCKET_NAME, PHOTOS_PREFIX, album, PHOTOS_FORMAT_THUMB, filename)
+def album_get_url(album,filename,pic_format=PHOTOS_FORMAT_ORIGINAL):
+  return "http://{bucket_name}/{prefix}{album}/{pic_format}/{filename}".format(
+    'bucket_name' = PHOTOS_BUCKET_NAME,
+    'prefix' = PHOTOS_PREFIX,
+    'album' = album,
+    'pic_format' = pic_format
+    'filename' = filename)
 
 def album_get_photo(album,filename,local_filename,pic_format = PHOTOS_FORMAT_ORIGINAL):
   key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
@@ -111,12 +110,15 @@ def album_put_photo(album,filename,local_filename,pic_format):
   # re-generatable formats, can overwrite, use reduced redundancy storage
   if pic_format in (PHOTOS_FORMAT_LARGE, PHOTOS_FORMAT_SMALL, PHOTOS_FORMAT_THUMB):
     key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
-    key.set_contents_from_filename(local_filename, reduced_redundancy == True)
+    if not key:
+      key = PHOTOS_BUCKET.new_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
+    key.set_contents_from_filename(local_filename, reduced_redundancy = True)
 
   # don't overwrite existing originals, use normal S3 storage
   elif pic_format == PHOTOS_FORMAT_ORIGINAL:
     key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
     if not key:
+      key = PHOTOS_BUCKET.new_key(PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename)
       key.set_contents_from_filename(local_filename)
 
   else:

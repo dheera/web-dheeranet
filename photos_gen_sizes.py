@@ -17,7 +17,7 @@ photos.album_get_photo('__watermark__', 'contrast.png', '/tmp/large-contrast.png
 
 album = 'events/20140614dragonboat'
 
-print("listing album %s ... " % album, end='')
+print("listing album {0} ... ".format(album), end='')
 sys.stdout.flush()
 
 filenames_original = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_ORIGINAL)
@@ -33,7 +33,7 @@ for filename in filenames_original:
   if(filename.endswith('.jpg')):
 
     if not filename in filenames_small:
-      print("  creating small for %s " % filename, end='')
+      print("  creating small for {0} ".format(filename), end='')
       sys.stdout.flush()
 
       # get image
@@ -89,7 +89,7 @@ for filename in filenames_original:
       call(['exiftool',
            '-q',
            '-overwrite_original',
-           '-Author=\"%s\"' % photos.PHOTOS_EXIF_AUTHOR,
+           '-Author=\"%s\"'.format(photos.PHOTOS_EXIF_AUTHOR),
            '/tmp/foo_scaled.jpg'])
 
       # put image
@@ -103,7 +103,7 @@ for filename in filenames_original:
       sys.stdout.flush()
 
     if not filename in filenames_large:
-      print("  creating large for %s " % filename, end='')
+      print("  creating large for {0} ".format(filename), end='')
       sys.stdout.flush()
 
       # get image
@@ -162,7 +162,7 @@ for filename in filenames_original:
       call(['exiftool',
            '-q',
            '-overwrite_original',
-           '-Author=\"%s\"' % photos.PHOTOS_EXIF_AUTHOR,
+           '-Author=\"%s\"'.format(photos.PHOTOS_EXIF_AUTHOR),
            '/tmp/foo_scaled.jpg'])
 
       # put image
@@ -175,5 +175,5 @@ for filename in filenames_original:
       sys.stdout.flush()
 
     if not filename in filenames_thumb:
-      print("creating thumb for %s" % filename)
+      print("creating thumb for {0}".format(filename))
 
