@@ -1,17 +1,10 @@
-apt-get install lighttpd pip imagemagick git
-
-pip install boto
-pip install flup 
-pip install django
-pip install flask
-
-lighty-enable-mod fastcgi
-
-mkdir /www
-git clone https://github.com/dheera/web-dheeranet /www/dheeranet
-chown -R ubuntu /www/dheeranet
-
-mv /etc/lighttpd/lighttpd.conf /etc/lighttpd/lighttpd.conf.default
-cp lighttpd.conf /etc/lighttpd/lighttpd.conf
-
-/etc/init.d/lighttpd force-reload
+#!/bin/sh
+sudo apt-get install lighttpd python-pip imagemagick git exiftool
+sudo pip install boto flup django flask
+sudo lighty-enable-mod fastcgi
+sudo mkdir /www
+sudo git clone https://github.com/dheera/web-dheeranet /www/dheeranet
+sudo chown -R ubuntu /www/dheeranet
+sudo mv /etc/lighttpd/lighttpd.conf /etc/lighttpd/lighttpd.conf.default
+sudo cp /www/dheeranet/lighttpd.conf /etc/lighttpd/lighttpd.conf
+sudo /etc/init.d/lighttpd force-reload
