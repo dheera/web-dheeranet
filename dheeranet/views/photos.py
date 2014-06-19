@@ -22,10 +22,10 @@ PHOTOS_LARGE_WIDTH = 2048
 PHOTOS_EXIF_AUTHOR = 'Dheera Venkatraman | http://dheera.net'
 
 PHOTOS_FORMAT_ORIGINAL = 'original'
-PHOTOS_FORMAT_SMALL = 'web-%d' % PHOTOS_SMALL_WIDTH
-PHOTOS_FORMAT_LARGE = 'web-%d' % PHOTOS_LARGE_WIDTH
-PHOTOS_FORMAT_THUMB = 'thumb-%d-%d' % (PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
-PHOTOS_THUMB_SIZE = '%dx%d' % (PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
+PHOTOS_FORMAT_SMALL = 'web-{}'.format(PHOTOS_SMALL_WIDTH)
+PHOTOS_FORMAT_LARGE = 'web-{}'.format(PHOTOS_LARGE_WIDTH)
+PHOTOS_FORMAT_THUMB = 'thumb-{}-{}'.format(PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
+PHOTOS_THUMB_SIZE = '{}x{}'.format(PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
 
 photos = Blueprint('photos', __name__,template_folder='../template')
 
@@ -33,7 +33,7 @@ photos = Blueprint('photos', __name__,template_folder='../template')
 def show():
   content = generate_photos_home()
 
-  return render_template('page.html',title='{|en:photos|zh:相冊|}',content=content)
+  return render_template('page.html',title=u'{|en:photos|zh:相冊|}',content=content)
 
 @photos.route('/<path:album>')
 def show_album(album):
@@ -52,7 +52,13 @@ def show_album(album):
       download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL)
       thumb_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB)
       content += "<div class=\"photos_thumbnail clickable\">"
-      content += '<a href="%s"><img data-download="%s" src="%s" width="%s" height="%s"></a>' % (display_url, download_url, thumb_url, PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
+      content += '<a href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a>'.format(
+        display_url = display_url,
+        download_url = download_url,
+        thumb_url = thumb_url,
+        width = PHOTOS_THUMB_WIDTH,
+        height = PHOTOS_THUMB_HEIGHT,
+      )
       content += "</div> "
 
   return render_template('page.html',title=album_info['title'],content=content)
@@ -64,13 +70,13 @@ def generate_photos_home():
   index = json.loads(index_key.get_contents_as_string().decode('utf-8'))
 
   for index_section in index:
-    content += '<h2>%s</h2>' % index_section['title']
+    content += u'<h2>{}</h2>'.format(index_section['title'])
     if 'show' not in index_section:
       subpaths = PHOTOS_BUCKET.list(PHOTOS_PREFIX + index_section['path'] + '/', '/')
       subpaths = map(lambda(k): k.name.encode('utf-8'), subpaths)
       subpaths = map(lambda(s): s[s.rfind('/')+1:], subpaths)
       for subpath in subpaths:
-          content += '<h3>%s</h3>' % subpath
+          content += u'<h3>{}</h3>'.format(subpath)
   return content
 
 @cached()
@@ -89,13 +95,13 @@ def album_get_filenames(album,pic_format = PHOTOS_FORMAT_ORIGINAL):
   return filenames
 
 def album_get_url(album,filename,pic_format=PHOTOS_FORMAT_ORIGINAL):
-  return "http://{bucket_name}/{prefix}{album}/{pic_format}/{filename}".format({
-    'bucket_name': PHOTOS_BUCKET_NAME,
-    'prefix': PHOTOS_PREFIX,
-    'album': album,
-    'pic_format': pic_format,
-    'filename': filename,
-  })
+  return "http://{bucket_name}/{prefix}{album}/{pic_format}/{filename}".format(
+    bucket_name = PHOTOS_BUCKET_NAME,
+    prefix = PHOTOS_PREFIX,
+    album = album,
+    pic_format = pic_format,
+    filename = filename,
+  )
 
 def album_get_key(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL, create = False):
   key_name = PHOTOS_PREFIX + album + '/' + pic_format + '/' + filename
