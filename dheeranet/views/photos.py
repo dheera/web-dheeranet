@@ -5,7 +5,7 @@ from flask import Blueprint, render_template, abort, Response, send_file, send_f
 from jinja2 import TemplateNotFound
 from subprocess import call
 from dheeranet import static_bucket
-from dheeranet.cache import cache, cached
+from dheeranet.cache import cache, cached, s3_get_cached, s3_list_cached
 from dheeranet.slugify import slugify
 from boto.s3.key import Key
 import os, glob
@@ -13,7 +13,6 @@ import json
 from hashlib import sha1
 
 PHOTOS_BUCKET = static_bucket
-PHOTOS_BUCKET_NAME = 'static.dheera.net'
 PHOTOS_PREFIX = 'photos/'
 PHOTOS_THUMB_WIDTH = 140
 PHOTOS_THUMB_HEIGHT = 140
@@ -21,6 +20,7 @@ PHOTOS_SMALL_WIDTH = 1024
 PHOTOS_LARGE_WIDTH = 2048
 PHOTOS_EXIF_AUTHOR = 'Dheera Venkatraman | http://dheera.net'
 
+PHOTOS_BUCKET_NAME = PHOTOS_BUCKET.name
 PHOTOS_FORMAT_ORIGINAL = 'original'
 PHOTOS_FORMAT_SMALL = 'web-{}'.format(PHOTOS_SMALL_WIDTH)
 PHOTOS_FORMAT_LARGE = 'web-{}'.format(PHOTOS_LARGE_WIDTH)
@@ -67,10 +67,9 @@ def show_album(album):
 
   return render_template('page.html',title=album_info['title'],content=content)
 
-@cached()
 def list_albums(path, create=False):
-  albums = PHOTOS_BUCKET.list(PHOTOS_PREFIX + path + '/', '/')
-  albums = map(lambda(k): k.name.encode('utf-8').strip('/').replace('photos/',''), albums)
+  albums = s3_list_cached(PHOTOS_BUCKET, PHOTOS_PREFIX + path + '/', '/')
+  albums = map(lambda(k): k.strip('/').replace('photos/',''), albums)
   if path in albums:
     albums.remove(path)
   return [album for album in albums if album_get_info(album, create=create)]
@@ -135,12 +134,11 @@ def generate_photos_home():
           content += u'</div> '
   return content
 
-@cached()
 def album_get_info(album, create=False):
-  info_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/__info__')
-  if info_key:
+  info_json = s3_get_cached(PHOTOS_BUCKET, PHOTOS_PREFIX + album + '/__info__')
+  if info_json:
     try:
-      return json.loads(info_key.get_contents_as_string().decode('utf-8'))
+      return json.loads(info_json)
     except ValueError, e:
       print "error: invalid json: %s" % info
       return None
@@ -159,10 +157,9 @@ def album_get_info(album, create=False):
   else:
     return None
 
-@cached()
 def album_get_filenames(album,pic_format = PHOTOS_FORMAT_ORIGINAL):
-  filenames = PHOTOS_BUCKET.list(PHOTOS_PREFIX + album + '/' + pic_format + '/', '/')
-  filenames = map(lambda(k): k.name.encode('utf-8'), filenames)
+  filenames = s3_list_cached(PHOTOS_BUCKET, PHOTOS_PREFIX + album + '/' + pic_format + '/', '/')
+  filenames = map(lambda(k): k.strip('/'), filenames)
   filenames = map(lambda(s): s[s.rfind('/')+1:], filenames)
   if '' in filenames:
     filenames.remove('')
