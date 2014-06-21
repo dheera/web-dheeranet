@@ -1,7 +1,7 @@
 from flask import Flask,request
 from werkzeug.contrib.cache import FileSystemCache, NullCache, MemcachedCache
 from dheeranet import app
-import marshal
+import marshal, hashlib
 
 CACHE_TIMEOUT = 3600
 if app.debug:
@@ -14,7 +14,7 @@ class cached(object):
     self.timeout = timeout or CACHE_TIMEOUT
   def __call__(self, f):
     def decorator(*args, **kwargs):
-      key = marshal.dumps((id(f),args,kwargs)).encode('hex')
+      key = hashlib.sha1(marshal.dumps((f.func_code, args, kwargs))).hexdigest()
       response = cache.get(key)
       if response is None:
         response = f(*args, **kwargs)
