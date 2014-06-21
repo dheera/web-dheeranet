@@ -90,7 +90,9 @@ def generate_photos_home():
         if album_info:
           content += u'<div class="photos-album" onclick="window.location.href=\'/photos/{}\';">'.format(album)
           content += u'<div class="photos-album-description">'
-          if 'description' in album_info:
+          if 'description_short' in album_info:
+            content += album_info['description_short']
+          elif 'description' in album_info:
             content += album_info['description']
           content += u'</div>'
           content += u'<div class="photos-album-cover">'
@@ -111,14 +113,37 @@ def generate_photos_home():
       for album in albums:
         album_info = album_get_info(album)
         if album_info:
-          content += u'<h3>{}</h3>'.format(album_info['title'])
+          content += u'<div class="photos-album" onclick="window.location.href=\'/photos/{}\';">'.format(album)
+          content += u'<div class="photos-album-description">'
+          if 'description_short' in album_info:
+            content += album_info['description_short']
+          elif 'description' in album_info:
+            content += album_info['description']
+          content += u'</div>'
+          content += u'<div class="photos-album-cover">'
+          if 'cover' in album_info:
+            content += u'<a href="/photos/{}">'.format(album)
+            content += u'<img src="http://{0}/{1}{2}/{3}/{4}">'.format(
+              PHOTOS_BUCKET_NAME,
+              PHOTOS_PREFIX,
+              album,
+              PHOTOS_FORMAT_THUMB,
+              album_info['cover'])
+          content += u'</a>'
+          content += u'</div>'
+          content += u'<div class="photos-album-title">{}</div>'.format(album_info['title'])
+          content += u'</div> '
   return content
 
 @cached()
 def album_get_info(album, create=False):
   info_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/__info__')
   if info_key:
-    return json.loads(info_key.get_contents_as_string().decode('utf-8'))
+    try:
+      return json.loads(info_key.get_contents_as_string().decode('utf-8'))
+    except ValueError, e:
+      print "error: invalid json: %s" % info
+      return None
   elif create == True:
     filenames = album_get_filenames(album)
     if len(filenames)>1 and filenames[0].endswith('.jpg'):
@@ -127,10 +152,7 @@ def album_get_info(album, create=False):
       info['cover'] = filenames[0]
       info['description'] = ''
       key = PHOTOS_BUCKET.new_key(PHOTOS_PREFIX + album + '/__info__')
-      try:
-        key.set_contents_from_string(json.dumps(info))
-      except ValueError, e:
-        print "error: invalid json: %s" % info
+      key.set_contents_from_string(json.dumps(info))
       return info
     else:
       return None
