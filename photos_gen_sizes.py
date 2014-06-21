@@ -37,11 +37,16 @@ for album in albums:
   print("listing album {0} ... ".format(album), end='')
   sys.stdout.flush()
 
-  filenames_original = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_ORIGINAL)
-  filenames_small    = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_SMALL)
-  filenames_large    = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_LARGE)
-  filenames_thumb    = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_THUMB)
-  filenames_thumb2   = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_THUMB2)
+  filenames_original = photos.album_list_filenames(album,
+                         pic_format=photos.PHOTOS_FORMAT_ORIGINAL, force_recache=True)
+  filenames_small    = photos.album_list_filenames(album,
+                         pic_format=photos.PHOTOS_FORMAT_SMALL, force_recache=True)
+  filenames_large    = photos.album_list_filenames(album,
+                         pic_format=photos.PHOTOS_FORMAT_LARGE, force_recache=True)
+  filenames_thumb    = photos.album_list_filenames(album,
+                         pic_format=photos.PHOTOS_FORMAT_THUMB, force_recache=True)
+  filenames_thumb2   = photos.album_list_filenames(album,
+                         pic_format=photos.PHOTOS_FORMAT_THUMB2, force_recache=True)
 
   print('done')
   sys.stdout.flush()

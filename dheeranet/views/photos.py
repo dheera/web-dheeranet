@@ -58,7 +58,7 @@ def show_album(album):
       display_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL)
       download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL)
       thumb_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB)
-      content += "<div class=\"photos_thumbnail clickable\">"
+      content += "<div class=\"photos-thumbnail clickable\">"
       content += '<a href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a>'.format(
         display_url = display_url,
         download_url = download_url,
