@@ -1,5 +1,5 @@
 from flask import Flask,request
-from werkzeug.contrib.cache import FileSystemCache, NullCache, MemcachedCache
+from werkzeug.contrib.cache import NullCache, MemcachedCache
 from dheeranet import app
 import marshal, hashlib
 from random import randrange
