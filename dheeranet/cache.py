@@ -29,7 +29,8 @@ def s3_list_cached(s3_bucket, s3_prefix, s3_delimiter, timeout=None, force_recac
   if force_recache or not response:
     response = s3_bucket.list(s3_prefix, s3_delimiter)
     response = map(lambda(k): k.name.encode('utf-8'), response)
-    cache.set(cache_key, response, timeout or CACHE_TIMEOUT + randrange(-CACHE_TIMEOUT/10,CACHE_TIMEOUT/10))
+    cache.set(cache_key, response,
+      timeout or randrange(CACHE_TIMEOUT-CACHE_TIMEOUT/10, CACHE_TIMEOUT + CACHE_TIMEOUT/10))
   return response
 
 def s3_get_cached(s3_bucket, s3_key_name, timeout=None, force_recache=False):
@@ -39,6 +40,7 @@ def s3_get_cached(s3_bucket, s3_key_name, timeout=None, force_recache=False):
     s3_key = s3_bucket.get_key(s3_key_name)
     if s3_key:
       response = s3_key.get_contents_as_string().decode('utf-8')
-    cache.set(cache_key, response, timeout or CACHE_TIMEOUT + randrange(-CACHE_TIMEOUT/10,CACHE_TIMEOUT/10))
+    cache.set(cache_key, response,
+      timeout or randrange(CACHE_TIMEOUT-CACHE_TIMEOUT/10, CACHE_TIMEOUT + CACHE_TIMEOUT/10))
   return response
 
