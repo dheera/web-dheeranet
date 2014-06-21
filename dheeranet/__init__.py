@@ -8,7 +8,6 @@ import re
 
 s3 = S3Connection(open('.aws_id').read().strip(),open('.aws_secret').read().strip())
 
-objects_bucket = s3.get_bucket('objects.dheera.net')
 static_bucket = s3.get_bucket('static.dheera.net')
 
 # parse multilingual HTML

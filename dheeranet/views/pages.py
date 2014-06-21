@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, abort, redirect
 from jinja2 import TemplateNotFound
-from dheeranet import objects_bucket
-from dheeranet.cache import cached
+from dheeranet import static_bucket
+from dheeranet.cache import cached, s3_get_cached
 from ast import literal_eval
 import json
 
@@ -10,7 +10,6 @@ pages = Blueprint('pages', __name__,template_folder='../template')
 @pages.route('/<path:path>')
 def show(path):
   try:
-
 
     page = get_page(path)
     if not page:
@@ -38,37 +37,31 @@ def show(path):
   except IOError:
     abort(404)
 
+
 @cached()
-def get_page(path, abort_on_not_found=True):
-  if path[-1] == '/':
-    path += '__index__'
-
-  key = objects_bucket.get_key('pages/' + path)
-  if not key:
-    key = objects_bucket.get_key('pages/' + path + '/__index__')
-
-  if key:
-    return key.get_contents_as_string().decode('utf-8')
-  else:
-    if abort_on_not_found:
-      abort(404)
-    return None
+def get_page(path):
+  page = s3_get_cached(static_bucket, 'pages/' + path)
+  if not page:
+    page = s3_get_cached(static_bucket, 'pages/' + path + '/__index__')
+  return page
 
 @cached()
 def get_subnavbar(path):
-  key = None
 
-  if path[-1] == '/':
-    key = objects_bucket.get_key('pages/' + path + '__nav__')
+  print path
+  path = path.strip('/')
+  print path
 
-  if not key:
-    key = objects_bucket.get_key('pages/' + path + '/' + '__nav__')
+  subnavbar = s3_get_cached(static_bucket, 'pages/' + path + '/__nav__')
+  print('pages/' + path + '/__nav__')
 
-  if not key:
-    path_trunc = path[0:path.rfind('/')] + '/'
-    key = objects_bucket.get_key('pages/' + path_trunc + '__nav__')
+  if not subnavbar:
+    path_trunc = path[0:path.rfind('/')]
+    subnavbar = s3_get_cached(static_bucket, 'pages/' + path_trunc + '/__nav__')
+    print('pages/' + path + '/__nav__')
 
-  if key:
-    return json.loads(key.get_contents_as_string().decode('utf-8'))
+  if subnavbar:
+    return json.loads(subnavbar)
+
   else:
     return []
