@@ -41,10 +41,14 @@ def show_album(album):
   album = album.strip('/')
 
   album_info = album_get_info(album)
+
   if not album_info:
     abort(404)
 
   album_filenames = album_get_filenames(album)
+
+  if 'description' in album_info:
+    content += album_info['description'] + '<br><br>'
 
   for filename in album_filenames:
     if filename.endswith('.jpg'):
@@ -64,26 +68,72 @@ def show_album(album):
   return render_template('page.html',title=album_info['title'],content=content)
 
 @cached()
+def list_albums(path, create=False):
+  albums = PHOTOS_BUCKET.list(PHOTOS_PREFIX + path + '/', '/')
+  albums = map(lambda(k): k.name.encode('utf-8').strip('/').replace('photos/',''), albums)
+  if path in albums:
+    albums.remove(path)
+  return [album for album in albums if album_get_info(album, create=create)]
+
+@cached()
 def generate_photos_home():
   content = ''
-  index_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + '__index__')
+  index_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + '__featured__')
   index = json.loads(index_key.get_contents_as_string().decode('utf-8'))
 
   for index_section in index:
     content += u'<h2>{}</h2>'.format(index_section['title'])
-    if 'show' not in index_section:
-      subpaths = PHOTOS_BUCKET.list(PHOTOS_PREFIX + index_section['path'] + '/', '/')
-      subpaths = map(lambda(k): k.name.encode('utf-8'), subpaths)
-      subpaths = map(lambda(s): s[s.rfind('/')+1:], subpaths)
-      for subpath in subpaths:
-          content += u'<h3>{}</h3>'.format(subpath)
+    if 'albums' in index_section:
+      albums = map(lambda s: index_section['path'] + '/' + s.strip('/'), index_section['albums'])
+      for album in albums:
+        album_info = album_get_info(album)
+        if album_info:
+          content += u'<div class="photos-album" onclick="window.location.href=\'/photos/{}\';">'.format(album)
+          content += u'<div class="photos-album-description">'
+          if 'description' in album_info:
+            content += album_info['description']
+          content += u'</div>'
+          content += u'<div class="photos-album-cover">'
+          if 'cover' in album_info:
+            content += u'<a href="/photos/{}">'.format(album)
+            content += u'<img src="http://{0}/{1}{2}/{3}/{4}">'.format(
+              PHOTOS_BUCKET_NAME,
+              PHOTOS_PREFIX,
+              album,
+              PHOTOS_FORMAT_THUMB,
+              album_info['cover'])
+          content += u'</a>'
+          content += u'</div>'
+          content += u'<div class="photos-album-title">{}</div>'.format(album_info['title'])
+          content += u'</div> '
+    else:
+      album = list_albums(index_section['path'])
+      for album in albums:
+        album_info = album_get_info(album)
+        if album_info:
+          content += u'<h3>{}</h3>'.format(album_info['title'])
   return content
 
 @cached()
-def album_get_info(album):
+def album_get_info(album, create=False):
   info_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + album + '/__info__')
   if info_key:
     return json.loads(info_key.get_contents_as_string().decode('utf-8'))
+  elif create == True:
+    filenames = album_get_filenames(album)
+    if len(filenames)>1 and filenames[0].endswith('.jpg'):
+      info = {}
+      info['title'] = album
+      info['cover'] = filenames[0]
+      info['description'] = ''
+      key = PHOTOS_BUCKET.new_key(PHOTOS_PREFIX + album + '/__info__')
+      try:
+        key.set_contents_from_string(json.dumps(info))
+      except ValueError, e:
+        print "error: invalid json: %s" % info
+      return info
+    else:
+      return None
   else:
     return None
 
@@ -92,6 +142,8 @@ def album_get_filenames(album,pic_format = PHOTOS_FORMAT_ORIGINAL):
   filenames = PHOTOS_BUCKET.list(PHOTOS_PREFIX + album + '/' + pic_format + '/', '/')
   filenames = map(lambda(k): k.name.encode('utf-8'), filenames)
   filenames = map(lambda(s): s[s.rfind('/')+1:], filenames)
+  if '' in filenames:
+    filenames.remove('')
   return filenames
 
 def album_get_url(album,filename,pic_format=PHOTOS_FORMAT_ORIGINAL):

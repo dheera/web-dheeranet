@@ -3,177 +3,247 @@
 # Photo format generating script, to be executed separate from web server
 
 from __future__ import print_function
-import sys
+import sys, os, shutil, signal
 from dheeranet.views import photos
 from subprocess import call, check_output
+from tempfile import mkdtemp
+
+tempdir = mkdtemp();
+tempdir_watermark = mkdtemp();
+
+def signal_handler(signal, frame):
+  shutil.rmtree(tempdir)
+  shutil.rmtree(tempdir_watermark)
+  sys.exit(0)
+
+signal.signal(signal.SIGINT, signal_handler)
 
 # get watermark files
-photos.album_get_photo('__watermark__', 'light.png', '/tmp/small-light.png', pic_format=photos.PHOTOS_FORMAT_SMALL)
-photos.album_get_photo('__watermark__', 'dark.png', '/tmp/small-dark.png', pic_format=photos.PHOTOS_FORMAT_SMALL)
-photos.album_get_photo('__watermark__', 'contrast.png', '/tmp/small-contrast.png', pic_format=photos.PHOTOS_FORMAT_SMALL)
-photos.album_get_photo('__watermark__', 'light.png', '/tmp/large-light.png', pic_format=photos.PHOTOS_FORMAT_LARGE)
-photos.album_get_photo('__watermark__', 'dark.png', '/tmp/large-dark.png', pic_format=photos.PHOTOS_FORMAT_LARGE)
-photos.album_get_photo('__watermark__', 'contrast.png', '/tmp/large-contrast.png', pic_format=photos.PHOTOS_FORMAT_LARGE)
+photos.album_get_photo('__watermark__', 'light.png', tempdir_watermark + '/small-light.png', pic_format=photos.PHOTOS_FORMAT_SMALL)
+photos.album_get_photo('__watermark__', 'dark.png', tempdir_watermark + '/small-dark.png', pic_format=photos.PHOTOS_FORMAT_SMALL)
+photos.album_get_photo('__watermark__', 'contrast.png', tempdir_watermark + '/small-contrast.png', pic_format=photos.PHOTOS_FORMAT_SMALL)
+photos.album_get_photo('__watermark__', 'light.png', tempdir_watermark + '/large-light.png', pic_format=photos.PHOTOS_FORMAT_LARGE)
+photos.album_get_photo('__watermark__', 'dark.png', tempdir_watermark + '/large-dark.png', pic_format=photos.PHOTOS_FORMAT_LARGE)
+photos.album_get_photo('__watermark__', 'contrast.png', tempdir_watermark + '/large-contrast.png', pic_format=photos.PHOTOS_FORMAT_LARGE)
 
-album = 'events/20140614dragonboat'
+albums = photos.list_albums('places', create=True) + \
+         photos.list_albums('journeys', create=True) + \
+         photos.list_albums('events', create=True) + \
+         photos.list_albums('abstract', create=True)
 
-print("listing album {0} ... ".format(album), end='')
-sys.stdout.flush()
+for album in albums:
 
-filenames_original = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_ORIGINAL)
-filenames_small    = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_SMALL)
-filenames_large    = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_LARGE)
-filenames_thumb    = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_THUMB)
+  print("listing album {0} ... ".format(album), end='')
+  sys.stdout.flush()
 
-print('done')
-sys.stdout.flush()
+  filenames_original = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_ORIGINAL)
+  filenames_small    = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_SMALL)
+  filenames_large    = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_LARGE)
+  filenames_thumb    = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_THUMB)
 
-for filename in filenames_original:
+  print('done')
+  sys.stdout.flush()
 
-  if(filename.endswith('.jpg')):
+  for filename in filenames_original:
+  
+    if(filename.endswith('.jpg')):
+  
+      if not filename in filenames_small:
+        print("  creating small for {0} ".format(filename), end='')
+        sys.stdout.flush()
+  
+        # get image
+  
+        photos.album_get_photo(album, filename, tempdir + '/' + filename)
+  
+        # scale it
+        print('.', end='')
+        sys.stdout.flush()
+  
+        call(['nice', 'convert',
+             '-scale', str(photos.PHOTOS_SMALL_WIDTH*3/2),
+             '-sharpen', '0x1',
+             tempdir + '/' + filename,
+             tempdir + '/' + filename + '.bmp'])
+  
+        print('.', end='')
+        call(['nice', 'convert',
+             '-strip',
+             '-scale', str(photos.PHOTOS_SMALL_WIDTH),
+             tempdir + '/' + filename + '.bmp',
+             tempdir + '/' + filename + '.bmp'])
+  
+        # get mean and std of region to be watermarked
+  
+        print('.', end='')
+        sys.stdout.flush()
+  
+        call(['nice', 'convert',
+             '-crop', '150x70+0+0',
+             '-gravity', 'SouthWest',
+             tempdir + '/' + filename + '.bmp',
+             tempdir + '/' + filename + '.sub.bmp'])
+  
+        (mean, std) = map(float, check_output(['nice', 'identify',
+             '-format', '%[mean] %[standard-deviation]',
+             tempdir + '/' + filename + '.sub.bmp']).strip().split(' '))
+  
+        if std>8000:
+          watermark_file = tempdir_watermark + '/small-contrast.png'
+        elif mean>32768:
+          watermark_file = tempdir_watermark + '/small-dark.png'
+        else:
+          watermark_file = tempdir_watermark + '/small-light.png'
+  
+        # composite watermark
+  
+        print('.', end='')
+        sys.stdout.flush()
+  
+        call(['nice', 'composite',
+             '-gravity', 'SouthWest',
+             '-quality', '94',
+             '-compose', 'over', watermark_file,
+             tempdir + '/' + filename + '.bmp',
+             tempdir + '/' + filename + '.small.jpg'])
+  
+        print('.', end='')
+        sys.stdout.flush()
+  
+        call(['exiftool',
+             '-q',
+             '-overwrite_original',
+             '-Author=\"%s\"'.format(photos.PHOTOS_EXIF_AUTHOR),
+             tempdir + '/' + filename + '.small.jpg'])
+  
+        # put image
+  
+        print('.', end='')
+        sys.stdout.flush()
+  
+        photos.album_put_photo(album,
+          filename,
+          tempdir + '/' + filename + '.small.jpg',
+          pic_format=photos.PHOTOS_FORMAT_SMALL)
+  
+        print(' done')
+        sys.stdout.flush()
+  
+      if not filename in filenames_large:
+        print("  creating large for {0} ".format(filename), end='')
+        sys.stdout.flush()
+  
+        # get image
+  
+        if not os.path.isfile(tempdir + '/' + filename):
+          photos.album_get_photo(album, filename, tempdir + '/' + filename)
+  
+        # scale it
+        print('.', end='')
+        sys.stdout.flush()
+  
+        call(['nice', 'convert',
+             '-scale', str(photos.PHOTOS_LARGE_WIDTH*3/2),
+             '-sharpen', '0x1',
+             tempdir + '/' + filename,
+             tempdir + '/' + filename + '.bmp'])
+  
+        print('.', end='')
+        call(['nice', 'convert',
+             '-strip',
+             '-scale', str(photos.PHOTOS_LARGE_WIDTH),
+             tempdir + '/' + filename + '.bmp',
+             tempdir + '/' + filename + '.bmp'])
+  
+        # get mean and std of region to be watermarked
+  
+        print('.', end='')
+        sys.stdout.flush()
 
-    if not filename in filenames_small:
-      print("  creating small for {0} ".format(filename), end='')
-      sys.stdout.flush()
+        call(['nice', 'convert',
+             '-crop', '300x140+0+0',
+             '-gravity', 'SouthWest',
+             tempdir + '/' + filename + '.bmp',
+             tempdir + '/' + filename + '.sub.bmp'])
+  
+        (mean, std) = map(float, check_output(['nice', 'identify',
+             '-format', '%[mean] %[standard-deviation]',
+             tempdir + '/' + filename + '.sub.bmp']).strip().split(' '))
+  
+        if std>8000:
+          watermark_file = tempdir_watermark + '/large-contrast.png'
+        elif mean>32768:
+          watermark_file = tempdir_watermark + '/large-dark.png'
+        else:
+          watermark_file = tempdir_watermark + '/large-light.png'
+  
+        # composite watermark
+  
+        print('.', end='')
+        sys.stdout.flush()
+  
+        call(['nice', 'composite',
+             '-gravity', 'SouthWest',
+             '-quality', '94',
+             '-compose', 'over', watermark_file,
+             tempdir + '/' + filename + '.bmp',
+             tempdir + '/' + filename + '.large.jpg'])
+  
+        print('.', end='')
+        sys.stdout.flush()
+  
+        call(['exiftool',
+             '-q',
+             '-overwrite_original',
+             '-Author=\"%s\"'.format(photos.PHOTOS_EXIF_AUTHOR),
+             tempdir + '/' + filename + '.large.jpg'])
+  
+        # put image
+  
+        print('.', end='')
+        sys.stdout.flush()
+  
+        photos.album_put_photo(album,
+          filename,
+          tempdir + '/' + filename + '.large.jpg',
+          pic_format=photos.PHOTOS_FORMAT_LARGE)
+  
+        print(' done')
+        sys.stdout.flush()
+  
+  
+      if not filename in filenames_thumb:
+        print("  creating thumb for {0} ".format(filename), end='')
+        sys.stdout.flush()
+  
+        if not os.path.isfile(tempdir + '/' + filename):
+          photos.album_get_photo(album, filename, tempdir + '/' + filename)
+  
+        print('.', end='')
+        sys.stdout.flush()
+  
+        call(['convert',
+             '-strip',
+             tempdir + '/' + filename,
+             '-thumbnail', '140x140^',
+             '-gravity', 'center',
+             '-sharpen', '0x0.5',
+             '-quality', '80',
+             '-extent', '140x140',
+             tempdir + '/' + filename + '.thumb.jpg'])
+ 
+        print('.', end='')
+        sys.stdout.flush()
+  
+        photos.album_put_photo(album,
+          filename,
+          tempdir + '/' + filename + '.thumb.jpg',
+          pic_format=photos.PHOTOS_FORMAT_THUMB)
+  
+        print('.... done')
+        sys.stdout.flush()
 
-      # get image
+  map(os.unlink, [os.path.join(tempdir, f) for f in os.listdir(tempdir)])
 
-      photos.album_get_photo(album, filename, '/tmp/foo_original.jpg')
-
-      # scale it
-      print('.', end='')
-      sys.stdout.flush()
-
-      call(['nice', 'convert',
-           '-scale', str(photos.PHOTOS_SMALL_WIDTH*3/2),
-           '-sharpen', '0x1',
-           '/tmp/foo_original.jpg', '/tmp/foo.bmp'])
-
-      print('.', end='')
-      call(['nice', 'convert',
-           '-strip',
-           '-scale', str(photos.PHOTOS_SMALL_WIDTH),
-           '/tmp/foo.bmp', '/tmp/foo.bmp'])
-
-      # get mean and std of region to be watermarked
-
-      print('.', end='')
-      sys.stdout.flush()
-
-      (mean, std) = map(float, check_output(['nice', 'identify',
-           '-crop', '300x100+0+0',
-           '-format', '%[mean] %[standard-deviation]',
-           '/tmp/foo.bmp']).strip().split(' '))
-
-      if std>8000:
-        watermark_file = '/tmp/small-contrast.png'
-      elif mean>32768:
-        watermark_file = '/tmp/small-light.png'
-      else:
-        watermark_file = '/tmp/small-dark.png'
-
-      # composite watermark
-
-      print('.', end='')
-      sys.stdout.flush()
-
-      call(['nice', 'composite',
-           '-gravity', 'SouthWest',
-           '-quality', '94',
-           '-compose', 'over', watermark_file,
-           '/tmp/foo.bmp', '/tmp/foo_scaled.jpg'])
-
-      print('.', end='')
-      sys.stdout.flush()
-
-      call(['exiftool',
-           '-q',
-           '-overwrite_original',
-           '-Author=\"%s\"'.format(photos.PHOTOS_EXIF_AUTHOR),
-           '/tmp/foo_scaled.jpg'])
-
-      # put image
-
-      print('.', end='')
-      sys.stdout.flush()
-
-      photos.album_put_photo(album, filename, '/tmp/foo_scaled.jpg', pic_format=photos.PHOTOS_FORMAT_SMALL)
-
-      print(' done')
-      sys.stdout.flush()
-
-    if not filename in filenames_large:
-      print("  creating large for {0} ".format(filename), end='')
-      sys.stdout.flush()
-
-      # get image
-
-      photos.album_get_photo(album, filename, '/tmp/foo_original.jpg')
-
-      # scale it
-
-      print('.', end='')
-      sys.stdout.flush()
-
-      call(['nice', 'convert',
-           '-scale', str(photos.PHOTOS_LARGE_WIDTH*3/2),
-           '-sharpen', '0x1',
-           '/tmp/foo_original.jpg', '/tmp/foo.bmp'])
-
-      print('.', end='')
-      sys.stdout.flush()
-
-      call(['nice', 'convert',
-           '-strip',
-           '-scale', str(photos.PHOTOS_LARGE_WIDTH),
-           '/tmp/foo.bmp', '/tmp/foo.bmp'])
-
-      # get mean and std of region to be watermarked
-
-      print('.', end='')
-      sys.stdout.flush()
-
-      (mean, std) = map(float, check_output(['nice', 'identify',
-           '-crop', '300x100+0+0',
-           '-format', '%[mean] %[standard-deviation]',
-           '/tmp/foo.bmp']).strip().split(' '))
-
-      if std>8000:
-        watermark_file = '/tmp/large-contrast.png'
-      elif mean>32768:
-        watermark_file = '/tmp/large-light.png'
-      else:
-        watermark_file = '/tmp/large-dark.png'
-
-      # composite watermark
-
-      print('.', end='')
-      sys.stdout.flush()
-
-      call(['nice', 'composite',
-           '-gravity', 'SouthWest',
-           '-quality', '94',
-           '-compose', 'over', watermark_file,
-           '/tmp/foo.bmp', '/tmp/foo_scaled.jpg'])
-
-      print('.', end='')
-      sys.stdout.flush()
-
-      call(['exiftool',
-           '-q',
-           '-overwrite_original',
-           '-Author=\"%s\"'.format(photos.PHOTOS_EXIF_AUTHOR),
-           '/tmp/foo_scaled.jpg'])
-
-      # put image
-      print('.', end='')
-      sys.stdout.flush()
-
-      photos.album_put_photo(album, filename, '/tmp/foo_scaled.jpg', pic_format=photos.PHOTOS_FORMAT_LARGE)
-
-      print(' done')
-      sys.stdout.flush()
-
-    if not filename in filenames_thumb:
-      print("creating thumb for {0}".format(filename))
-
+shutil.rmtree(tempdir)
+shutil.rmtree(tempdir_watermark)

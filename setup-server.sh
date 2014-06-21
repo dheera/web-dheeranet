@@ -1,6 +1,6 @@
 #!/bin/sh
-sudo apt-get install lighttpd python-pip imagemagick graphicsmagick git exiftool
-sudo pip install boto flup django flask
+sudo apt-get install lighttpd python-pip imagemagick graphicsmagick git exiftool memcached
+sudo pip install boto flup django flask python-memcached
 sudo lighty-enable-mod fastcgi
 sudo mkdir /www
 sudo git clone https://github.com/dheera/web-dheeranet /www/dheeranet
