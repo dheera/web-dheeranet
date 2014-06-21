@@ -40,6 +40,8 @@ def s3_get_cached(s3_bucket, s3_key_name, timeout=None, force_recache=False):
     s3_key = s3_bucket.get_key(s3_key_name)
     if s3_key:
       response = s3_key.get_contents_as_string().decode('utf-8')
+    else:
+      response = None
     cache.set(cache_key, response,
       timeout or randrange(CACHE_TIMEOUT-CACHE_TIMEOUT/10, CACHE_TIMEOUT + CACHE_TIMEOUT/10))
   return response

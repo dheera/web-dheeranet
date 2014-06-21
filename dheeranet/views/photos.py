@@ -16,6 +16,8 @@ PHOTOS_BUCKET = static_bucket
 PHOTOS_PREFIX = 'photos/'
 PHOTOS_THUMB_WIDTH = 140
 PHOTOS_THUMB_HEIGHT = 140
+PHOTOS_THUMB2_WIDTH = 200
+PHOTOS_THUMB2_HEIGHT = 200
 PHOTOS_SMALL_WIDTH = 1024
 PHOTOS_LARGE_WIDTH = 2048
 PHOTOS_EXIF_AUTHOR = 'Dheera Venkatraman | http://dheera.net'
@@ -25,6 +27,7 @@ PHOTOS_FORMAT_ORIGINAL = 'original'
 PHOTOS_FORMAT_SMALL = 'web-{}'.format(PHOTOS_SMALL_WIDTH)
 PHOTOS_FORMAT_LARGE = 'web-{}'.format(PHOTOS_LARGE_WIDTH)
 PHOTOS_FORMAT_THUMB = 'thumb-{}-{}'.format(PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
+PHOTOS_FORMAT_THUMB2 = 'thumb-{}-{}'.format(PHOTOS_THUMB2_WIDTH, PHOTOS_THUMB2_HEIGHT)
 PHOTOS_THUMB_SIZE = '{}x{}'.format(PHOTOS_THUMB_WIDTH, PHOTOS_THUMB_HEIGHT)
 
 photos = Blueprint('photos', __name__,template_folder='../template')
@@ -45,7 +48,7 @@ def show_album(album):
   if not album_info:
     abort(404)
 
-  album_filenames = album_get_filenames(album)
+  album_filenames = album_list_filenames(album)
 
   if 'description' in album_info:
     content += album_info['description'] + '<br><br>'
@@ -67,8 +70,10 @@ def show_album(album):
 
   return render_template('page.html',title=album_info['title'],content=content)
 
-def list_albums(path, create=False):
-  albums = s3_list_cached(PHOTOS_BUCKET, PHOTOS_PREFIX + path + '/', '/')
+def list_albums(path, create=False, force_recache = False):
+  albums = s3_list_cached(PHOTOS_BUCKET,
+    PHOTOS_PREFIX + path + '/', '/',
+    force_recache = force_recache)
   albums = map(lambda(k): k.strip('/').replace('photos/',''), albums)
   if path in albums:
     albums.remove(path)
@@ -97,18 +102,16 @@ def generate_photos_home():
           content += u'<div class="photos-album-cover">'
           if 'cover' in album_info:
             content += u'<a href="/photos/{}">'.format(album)
-            content += u'<img src="http://{0}/{1}{2}/{3}/{4}">'.format(
-              PHOTOS_BUCKET_NAME,
-              PHOTOS_PREFIX,
-              album,
-              PHOTOS_FORMAT_THUMB,
-              album_info['cover'])
+            content += u'<img src="{}">'.format(
+              album_get_url(album, album_info['cover'], PHOTOS_FORMAT_THUMB2))
           content += u'</a>'
           content += u'</div>'
           content += u'<div class="photos-album-title">{}</div>'.format(album_info['title'])
           content += u'</div> '
     else:
-      album = list_albums(index_section['path'])
+      albums = list_albums(index_section['path'])
+      if index_section['sort']:
+        albums.sort(reverse=(index_section['sort']=="reverse"))
       for album in albums:
         album_info = album_get_info(album)
         if album_info:
@@ -122,12 +125,8 @@ def generate_photos_home():
           content += u'<div class="photos-album-cover">'
           if 'cover' in album_info:
             content += u'<a href="/photos/{}">'.format(album)
-            content += u'<img src="http://{0}/{1}{2}/{3}/{4}">'.format(
-              PHOTOS_BUCKET_NAME,
-              PHOTOS_PREFIX,
-              album,
-              PHOTOS_FORMAT_THUMB,
-              album_info['cover'])
+            content += u'<img src="{}">'.format(
+              album_get_url(album, album_info['cover'], PHOTOS_FORMAT_THUMB2))
           content += u'</a>'
           content += u'</div>'
           content += u'<div class="photos-album-title">{}</div>'.format(album_info['title'])
@@ -143,7 +142,7 @@ def album_get_info(album, create=False):
       print "error: invalid json: %s" % info
       return None
   elif create == True:
-    filenames = album_get_filenames(album)
+    filenames = album_list_filenames(album)
     if len(filenames)>1 and filenames[0].endswith('.jpg'):
       info = {}
       info['title'] = album
@@ -157,8 +156,10 @@ def album_get_info(album, create=False):
   else:
     return None
 
-def album_get_filenames(album,pic_format = PHOTOS_FORMAT_ORIGINAL):
-  filenames = s3_list_cached(PHOTOS_BUCKET, PHOTOS_PREFIX + album + '/' + pic_format + '/', '/')
+def album_list_filenames(album, pic_format = PHOTOS_FORMAT_ORIGINAL, force_recache = False):
+  filenames = s3_list_cached(PHOTOS_BUCKET,
+    PHOTOS_PREFIX + album + '/' + pic_format + '/', '/',
+    force_recache = force_recache)
   filenames = map(lambda(k): k.strip('/'), filenames)
   filenames = map(lambda(s): s[s.rfind('/')+1:], filenames)
   if '' in filenames:
@@ -192,7 +193,7 @@ def album_get_photo(album, filename, local_filename, pic_format = PHOTOS_FORMAT_
 def album_put_photo(album, filename, local_filename, pic_format):
 
   # re-generatable formats, can overwrite, use reduced redundancy storage
-  if pic_format in (PHOTOS_FORMAT_LARGE, PHOTOS_FORMAT_SMALL, PHOTOS_FORMAT_THUMB):
+  if pic_format in (PHOTOS_FORMAT_LARGE, PHOTOS_FORMAT_SMALL, PHOTOS_FORMAT_THUMB, PHOTOS_FORMAT_THUMB2):
     key = album_get_key(album, filename, pic_format = pic_format, create = True)
     key.set_contents_from_filename(local_filename, reduced_redundancy = True)
 

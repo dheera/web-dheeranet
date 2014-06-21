@@ -26,20 +26,22 @@ photos.album_get_photo('__watermark__', 'light.png', tempdir_watermark + '/large
 photos.album_get_photo('__watermark__', 'dark.png', tempdir_watermark + '/large-dark.png', pic_format=photos.PHOTOS_FORMAT_LARGE)
 photos.album_get_photo('__watermark__', 'contrast.png', tempdir_watermark + '/large-contrast.png', pic_format=photos.PHOTOS_FORMAT_LARGE)
 
-albums = photos.list_albums('places', create=True) + \
-         photos.list_albums('journeys', create=True) + \
-         photos.list_albums('events', create=True) + \
-         photos.list_albums('abstract', create=True)
+albums = photos.list_albums('places', force_recache=True) + \
+         photos.list_albums('journeys', force_recache=True) + \
+         photos.list_albums('events', force_recache=True) + \
+         photos.list_albums('abstract', force_recache=True) + \
+         photos.list_albums('things', force_recache=True)
 
 for album in albums:
 
   print("listing album {0} ... ".format(album), end='')
   sys.stdout.flush()
 
-  filenames_original = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_ORIGINAL)
-  filenames_small    = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_SMALL)
-  filenames_large    = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_LARGE)
-  filenames_thumb    = photos.album_get_filenames(album, pic_format=photos.PHOTOS_FORMAT_THUMB)
+  filenames_original = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_ORIGINAL)
+  filenames_small    = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_SMALL)
+  filenames_large    = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_LARGE)
+  filenames_thumb    = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_THUMB)
+  filenames_thumb2   = photos.album_list_filenames(album, pic_format=photos.PHOTOS_FORMAT_THUMB2)
 
   print('done')
   sys.stdout.flush()
@@ -216,15 +218,15 @@ for album in albums:
         print("  creating thumb for {0} ".format(filename), end='')
         sys.stdout.flush()
   
-        if not os.path.isfile(tempdir + '/' + filename):
-          photos.album_get_photo(album, filename, tempdir + '/' + filename)
+        if not os.path.isfile(tempdir + '/' + filename + '.small.jpg'):
+          photos.album_get_photo(album, filename, tempdir + '/' + filename + '.small.jpg', photos.PHOTOS_FORMAT_SMALL)
   
         print('.', end='')
         sys.stdout.flush()
   
         call(['convert',
              '-strip',
-             tempdir + '/' + filename,
+             tempdir + '/' + filename + '.small.jpg',
              '-thumbnail', '140x140^',
              '-gravity', 'center',
              '-sharpen', '0x0.5',
@@ -239,6 +241,37 @@ for album in albums:
           filename,
           tempdir + '/' + filename + '.thumb.jpg',
           pic_format=photos.PHOTOS_FORMAT_THUMB)
+  
+        print('.... done')
+        sys.stdout.flush()
+
+      if not filename in filenames_thumb2:
+        print("  creating thumb2 for {0} ".format(filename), end='')
+        sys.stdout.flush()
+  
+        if not os.path.isfile(tempdir + '/' + filename + '.small.jpg'):
+          photos.album_get_photo(album, filename, tempdir + '/' + filename + '.small.jpg', photos.PHOTOS_FORMAT_SMALL)
+  
+        print('.', end='')
+        sys.stdout.flush()
+  
+        call(['convert',
+             '-strip',
+             tempdir + '/' + filename + '.small.jpg',
+             '-thumbnail', '200x200^',
+             '-gravity', 'center',
+             '-sharpen', '0x0.5',
+             '-quality', '80',
+             '-extent', '200x200',
+             tempdir + '/' + filename + '.thumb2.jpg'])
+ 
+        print('.', end='')
+        sys.stdout.flush()
+  
+        photos.album_put_photo(album,
+          filename,
+          tempdir + '/' + filename + '.thumb2.jpg',
+          pic_format=photos.PHOTOS_FORMAT_THUMB2)
   
         print('.... done')
         sys.stdout.flush()
