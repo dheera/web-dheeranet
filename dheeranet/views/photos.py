@@ -139,7 +139,7 @@ def album_get_info(album, create=False):
     try:
       return json.loads(info_json)
     except ValueError, e:
-      print "error: invalid json: %s" % info
+      print "error: invalid json: %s" % info_json
       return None
   elif create == True:
     filenames = album_list_filenames(album)
