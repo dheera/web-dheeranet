@@ -15,7 +15,10 @@ static_bucket = s3.get_bucket('static.dheera.net')
 def lang(code):
   # function to parse one string unit {|en:apple|zh:蘋果|}
   def repl_func(subcode):
-    accept_languages = request.environ['HTTP_ACCEPT_LANGUAGE']
+    if 'HTTP_ACCEPT_LANGUAGE' in request.environ:
+      accept_languages = request.environ['HTTP_ACCEPT_LANGUAGE']
+    else:
+      accept_languages = 'en'
 
     # check if user has overridden browser language with a cookie
     if 'lang' in request.cookies:
