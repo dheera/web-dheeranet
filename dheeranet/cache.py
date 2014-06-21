@@ -14,7 +14,7 @@ class cached(object):
     self.timeout = timeout or CACHE_TIMEOUT
   def __call__(self, f):
     def decorator(*args, **kwargs):
-      key = hashlib.sha1(marshal.dumps((f.func_code, args, kwargs))).hexdigest()
+      key = marshal.dumps((id(f), args, kwargs)).encode('hex')
       response = cache.get(key)
       if response is None:
         response = f(*args, **kwargs)
