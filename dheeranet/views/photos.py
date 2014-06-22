@@ -53,7 +53,7 @@ def show_album(album):
   if 'description' in album_info:
     content += album_info['description'] + '<br><br>'
 
-  content += '<div class="photos-thumbnail-set">'
+  content += '<div class="photos-thumbnail-set noselect">'
 
   for filename in album_filenames:
     if filename.endswith('.jpg'):
@@ -94,7 +94,7 @@ def generate_photos_home():
       for album in albums:
         album_info = album_get_info(album)
         if album_info:
-          content += u'<div class="photos-album" onclick="window.location.href=\'/photos/{}\';">'.format(album)
+          content += u'<div class="photos-album noselect" onclick="window.location.href=\'/photos/{}\';">'.format(album)
           content += u'<div class="photos-album-description">'
           if 'description_short' in album_info:
             content += album_info['description_short']
@@ -117,7 +117,7 @@ def generate_photos_home():
       for album in albums:
         album_info = album_get_info(album)
         if album_info:
-          content += u'<div class="photos-album" onclick="window.location.href=\'/photos/{}\';">'.format(album)
+          content += u'<div class="photos-album noselect" onclick="window.location.href=\'/photos/{}\';">'.format(album)
           content += u'<div class="photos-album-description">'
           if 'description_short' in album_info:
             content += album_info['description_short']
