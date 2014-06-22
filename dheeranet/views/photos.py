@@ -53,20 +53,22 @@ def show_album(album):
   if 'description' in album_info:
     content += album_info['description'] + '<br><br>'
 
+  content += '<div class="photos-thumbnail-set">'
+
   for filename in album_filenames:
     if filename.endswith('.jpg'):
       display_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL)
       download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL)
       thumb_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB)
-      content += "<div class=\"photos-thumbnail clickable\">"
-      content += '<a href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a>'.format(
+      content += '<a class=\"photos-thumbnail clickable\" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
         display_url = display_url,
         download_url = download_url,
         thumb_url = thumb_url,
         width = PHOTOS_THUMB_WIDTH,
         height = PHOTOS_THUMB_HEIGHT,
       )
-      content += "</div> "
+
+  content += '</div>'
 
   return render_template('page.html',title=album_info['title'],content=content)
 
