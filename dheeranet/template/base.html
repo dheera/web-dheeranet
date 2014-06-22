@@ -37,6 +37,8 @@
   <li class="clickable{% if href==request.path or (href.__len__()>1 and request.path.find(href) == 0) %} navbar-active{% else %} navbar-inactive{% endif %}" onclick="window.location.href='{{ href|e }}'"><a href="{{ href|e }}">{{ caption|lang|e }}</a></li>
 {%- endfor -%}
 </ul>
+<a href="javascript:$('.navbar-mobile').slideToggle()"><img src="http://static.dheera.net/images/mobile-menu.png" class="navbar-mobile-button" style="width:32px;height:32px;"></a>
+<!--
 <div class="navbar-mobile">
 <select onchange="if(this.value!=='') { $('#loading').show(); window.location.href=this.value; }">
 {%- for href, id, caption in navbar -%}
@@ -45,6 +47,7 @@
 {%- endfor -%}
 </select>
 </div>
+-->
       <div class="logo">
         <div onclick="window.location.href='/';" class="ui_cover" style="cursor:pointer;cursor:hand;"></div>
         <object data="http://static.dheera.net/images/logo.svg" type="image/svg+xml"><img alt="MIT Sustainability Summit" src="http://static.dheera.net/images/logo.png"></object>
