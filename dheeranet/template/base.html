@@ -25,33 +25,30 @@
 <body>
   <div class="topbar">
     <div style="margin-left:auto;margin-right:auto;max-width:980px;padding:0px;border-lft:0px solid #808080;border-right:0px solid #808080;border-bottom:0px;">
-<ul class="navbar">
-<li class="navbar-lang">
-{% filter lang %}
-<nobr><a class="{|en:navbar-lang-active|zh:navbar-lang-inactive|}" href="?lang=en">EN</a>
-&nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
-<a class="{|en:navbar-lang-inactive|zh:navbar-lang-active|}" href="?lang=zh">中文</a></nobr>
-{% endfilter %}
-</li>
-{%- for href, id, caption in navbar -%}
-  <li class="clickable{% if href==request.path or (href.__len__()>1 and request.path.find(href) == 0) %} navbar-active{% else %} navbar-inactive{% endif %}" onclick="window.location.href='{{ href|e }}'"><a href="{{ href|e }}">{{ caption|lang|e }}</a></li>
-{%- endfor -%}
-</ul>
-<a href="javascript:$('.navbar-mobile').slideToggle()"><img src="http://static.dheera.net/images/mobile-menu.png" class="navbar-mobile-button" style="width:32px;height:32px;"></a>
-<!--
-<div class="navbar-mobile">
-<select onchange="if(this.value!=='') { $('#loading').show(); window.location.href=this.value; }">
-{%- for href, id, caption in navbar -%}
-<option{% if request.path.find(href) == 0 %} selected="selected"{% endif
- %} value="{{ href }}">{{ caption.capitalize()|lang|e }}</option>
-{%- endfor -%}
-</select>
-</div>
--->
+      <ul class="navbar">
+        <li class="navbar-lang">
+          {% filter lang %}
+            <nobr><a class="{|en:navbar-lang-active|zh:navbar-lang-inactive|}" href="?lang=en">EN</a>
+            &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+            <a class="{|en:navbar-lang-inactive|zh:navbar-lang-active|}" href="?lang=zh">中文</a></nobr>
+          {% endfilter %}
+        </li>
+        {%- for href, id, caption in navbar -%}
+          <li class="clickable{% if href==request.path or (href.__len__()>1 and request.path.find(href) == 0) %} navbar-active{% else %} navbar-inactive{% endif %}" onclick="window.location.href='{{ href|e }}'"><a href="{{ href|e }}">{{ caption|lang|e }}</a></li>
+        {%- endfor -%}
+      </ul>
+      <a href="javascript:$('.navbar-mobile-container').slideToggle()"><img src="http://static.dheera.net/images/mobile-menu.png" class="navbar-mobile-button" style="width:32px;height:32px;"></a>
       <div class="logo">
         <div onclick="window.location.href='/';" class="ui_cover" style="cursor:pointer;cursor:hand;"></div>
         <object data="http://static.dheera.net/images/logo.svg" type="image/svg+xml"><img alt="MIT Sustainability Summit" src="http://static.dheera.net/images/logo.png"></object>
       </div>
+    </div>
+    <div class="navbar-mobile-container">
+      <ul class="navbar-mobile">
+        {%- for href, id, caption in navbar -%}
+          <li class="clickable{% if href==request.path or (href.__len__()>1 and request.path.find(href) == 0) %} navbar-active{% else %} navbar-inactive{% endif %}" onclick="window.location.href='{{ href|e }}'"><a href="{{ href|e }}">{{ caption|lang|e }}</a></li>
+        {%- endfor -%}
+      </ul>
     </div>
   </div>
   <div></div>
