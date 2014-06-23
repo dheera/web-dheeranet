@@ -198,7 +198,8 @@ h2 {
 }
 
 .mobile-lang {
-  font-size:14px !important;
+  font-size:16px !important;
+  margin-bottom:12px;
 }
 
 .mobile-lang-active {
