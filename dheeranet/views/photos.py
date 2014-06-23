@@ -148,7 +148,15 @@ def generate_photos_home():
           album_get_url(album_info['album'], album_info['cover'], PHOTOS_FORMAT_THUMB2))
       content += u'</a>'
       content += u'</div>'
-      content += u'<div class="photos-album-title">{}</div>'.format(album_info['title'])
+      content += u'<div class="photos-album-title">'
+      if album_info['date']:
+        content += u'<span class="photos-album-date">{{|en:{Y}.{m}.{d}|zh:{Y}年{m}月-{d}日|}}</span><br>'.format(
+          Y = album_info['date'][0:4],
+          m = album_info['date'][4:6],
+          d = album_info['date'][6:8],
+        )
+      content += album_info['title']
+      content += u'</div>'
       content += u'</div> '
 
     if len(album_infos)>8:
@@ -163,7 +171,15 @@ def generate_photos_home():
             album_get_url(album_info['album'], album_info['cover'], PHOTOS_FORMAT_THUMB))
         content += u'</a>'
         content += u'</div>'
-        content += u'<div class="photos-album-small-title">{}</div>'.format(album_info['title'])
+        content += u'<div class="photos-album-small-title">'
+        if album_info['date']:
+          content += u'<span class="photos-album-date">{{|en:{Y}.{m}.{d}|zh:{Y}年{m}月-{d}日|}}</span><br>'.format(
+            Y = album_info['date'][0:4],
+            m = album_info['date'][4:6],
+            d = album_info['date'][6:8],
+          )
+        content += album_info['title']
+        content += u'</div>'
         content += u'</div> '
       content += u'</div>'
 
@@ -177,6 +193,11 @@ def album_get_info(album, create=False):
     try:
       info = json.loads(info_json)
       info['album'] = album
+      if 'date' not in info:
+        if album[album.find('/')+1:][0:8].isdigit():
+          info['date'] = album[album.rfind('/')+1:][0:8]
+        else:
+          info['date'] = None
       return info
     except ValueError, e:
       print "error: invalid json: %s" % info_json
@@ -188,6 +209,7 @@ def album_get_info(album, create=False):
       info['album'] = album
       info['title'] = album
       info['cover'] = filenames[0]
+      info['date'] = None
       info['description'] = ''
       key = PHOTOS_BUCKET.new_key(PHOTOS_PREFIX + album + '/__info__')
       key.set_contents_from_string(json.dumps(info))
