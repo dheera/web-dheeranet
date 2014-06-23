@@ -68,16 +68,9 @@ app.register_blueprint(banner)
 from views.photos import photos
 app.register_blueprint(photos,url_prefix='/photos')
 
-# silly werkzeug issue <path:filename> doesn't work in root with dev server
-# http://stackoverflow.com/questions/17135006/url-routing-conflicts-for-static-files-in-flask-dev-server
-
-@app.route('/static/<filename>')
-def send_static_0(filename):
-  return redirect('http://static.dheera.net/'+filename)
-
-@app.route('/static/<subdir>/<path:filename>')
-def send_static_1(subdir,filename):
-  return redirect('http://static.dheera.net/'+subdir+'/'+filename)
+@app.route('/static/<path:filename>')
+def send_foo(filename):
+    return send_from_directory('static', filename)
 
 from views.pages import pages
 app.register_blueprint(pages)

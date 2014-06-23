@@ -48,17 +48,13 @@ def get_page(path):
 @cached()
 def get_subnavbar(path):
 
-  print path
   path = path.strip('/')
-  print path
 
   subnavbar = s3_get_cached(static_bucket, 'pages/' + path + '/__nav__')
-  print('pages/' + path + '/__nav__')
 
   if not subnavbar:
     path_trunc = path[0:path.rfind('/')]
     subnavbar = s3_get_cached(static_bucket, 'pages/' + path_trunc + '/__nav__')
-    print('pages/' + path + '/__nav__')
 
   if subnavbar:
     return json.loads(subnavbar)
