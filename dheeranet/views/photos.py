@@ -60,10 +60,11 @@ def show_album(album):
       display_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL)
       download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL)
       thumb_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB)
-      content += '<a class=\"photos-thumbnail clickable\" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
+      content += '<a id="{image_id}" class=\"photos-thumbnail clickable\" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
         display_url = display_url,
         download_url = download_url,
         thumb_url = thumb_url,
+        image_id = filename.replace('.jpg',''),
         width = PHOTOS_THUMB_WIDTH,
         height = PHOTOS_THUMB_HEIGHT,
       )
@@ -89,57 +90,59 @@ def generate_photos_home():
 
   for index_section in index:
     content += u'<h2>{}</h2>'.format(index_section['title'])
+
     if 'albums' in index_section:
       albums = map(lambda s: index_section['path'] + '/' + s.strip('/'), index_section['albums'])
-      for album in albums:
-        album_info = album_get_info(album)
-        if album_info:
-          content += u'<div class="photos-album noselect" onclick="window.location.href=\'/photos/{}\';">'.format(album)
-          content += u'<div class="photos-album-description">'
-          if 'description_short' in album_info:
-            content += album_info['description_short']
-          elif 'description' in album_info:
-            content += album_info['description']
-          content += u'</div>'
-          content += u'<div class="photos-album-cover">'
-          if 'cover' in album_info:
-            content += u'<a href="/photos/{}">'.format(album)
-            content += u'<img src="{}">'.format(
-              album_get_url(album, album_info['cover'], PHOTOS_FORMAT_THUMB2))
-          content += u'</a>'
-          content += u'</div>'
-          content += u'<div class="photos-album-title">{}</div>'.format(album_info['title'])
-          content += u'</div> '
     else:
       albums = list_albums(index_section['path'])
       if index_section['sort']:
         albums.sort(reverse=(index_section['sort']=="reverse"))
-      for album in albums:
-        album_info = album_get_info(album)
-        if album_info:
-          content += u'<div class="photos-album noselect" onclick="window.location.href=\'/photos/{}\';">'.format(album)
-          content += u'<div class="photos-album-description">'
-          if 'description_short' in album_info:
-            content += album_info['description_short']
-          elif 'description' in album_info:
-            content += album_info['description']
-          content += u'</div>'
-          content += u'<div class="photos-album-cover">'
-          if 'cover' in album_info:
-            content += u'<a href="/photos/{}">'.format(album)
-            content += u'<img src="{}">'.format(
-              album_get_url(album, album_info['cover'], PHOTOS_FORMAT_THUMB2))
-          content += u'</a>'
-          content += u'</div>'
-          content += u'<div class="photos-album-title">{}</div>'.format(album_info['title'])
-          content += u'</div> '
+
+    album_infos = filter(lambda x:x!=None, map(album_get_info, albums))
+
+    for album_info in album_infos[0:8]:
+      content += u'<div class="photos-album noselect" onclick="window.location.href=\'/photos/{}\';">'.format(album_info['album'])
+      content += u'<div class="photos-album-description">'
+      if 'description_short' in album_info:
+        content += album_info['description_short']
+      elif 'description' in album_info:
+        content += album_info['description']
+      content += u'</div>'
+      content += u'<div class="photos-album-cover">'
+      if 'cover' in album_info:
+        content += u'<a href="/photos/{}">'.format(album_info['album'])
+        content += u'<img src="{}">'.format(
+          album_get_url(album_info['album'], album_info['cover'], PHOTOS_FORMAT_THUMB2))
+      content += u'</a>'
+      content += u'</div>'
+      content += u'<div class="photos-album-title">{}</div>'.format(album_info['title'])
+      content += u'</div> '
+
+    if len(album_infos)>8:
+      content += u'<div class="photos-album-more-button clickable" onclick="$(this).next().slideDown();$(this).slideUp();">{|en:More...|zh:更多相冊。。。|}</div>'
+      content += u'<div class="photos-album-more">'
+      for album_info in album_infos[8:]:
+        content += u'<div class="photos-album-small noselect" onclick="window.location.href=\'/photos/{}\';">'.format(album_info['album'])
+        content += u'<div class="photos-album-small-cover">'
+        if 'cover' in album_info:
+          content += u'<a href="/photos/{}">'.format(album_info['album'])
+          content += u'<img src="{}">'.format(
+            album_get_url(album_info['album'], album_info['cover'], PHOTOS_FORMAT_THUMB))
+        content += u'</a>'
+        content += u'</div>'
+        content += u'<div class="photos-album-small-title">{}</div>'.format(album_info['title'])
+        content += u'</div> '
+      content += u'</div>'
+
   return content
 
 def album_get_info(album, create=False):
   info_json = s3_get_cached(PHOTOS_BUCKET, PHOTOS_PREFIX + album + '/__info__')
   if info_json:
     try:
-      return json.loads(info_json)
+      info = json.loads(info_json)
+      info['album'] = album
+      return info
     except ValueError, e:
       print "error: invalid json: %s" % info_json
       return None
@@ -147,6 +150,7 @@ def album_get_info(album, create=False):
     filenames = album_list_filenames(album)
     if len(filenames)>1 and filenames[0].endswith('.jpg'):
       info = {}
+      info['album'] = album
       info['title'] = album
       info['cover'] = filenames[0]
       info['description'] = ''
