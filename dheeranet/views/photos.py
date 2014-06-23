@@ -63,7 +63,7 @@ def show_album(album):
       content += u'<div class="photos-thumbnail-container">';
       content += u'<div class="photos-thumbnail-download" style="position:absolute;z-index:1;width:24px;height:24px;opacity:0;-webkit-transition:opacity 0.5s ease;"><a title="{{|en:Download original size|zh:下載原始大小|}}" href="{}"><img style="border:0;padding:0;margin:0;width:24px;height:24px;" src="http://static.dheera.net/images/photos-download-button.png"></a></div>'.format(download_url)
 
-      content += u'<a id="{image_id}" class=\"photos-thumbnail\" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a>'.format(
+      content += u'<a id="{image_id}" class="photos-thumbnail" rel="gallery" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a>'.format(
         display_url = display_url,
         download_url = download_url,
         thumb_url = thumb_url,
@@ -72,7 +72,7 @@ def show_album(album):
         height = PHOTOS_THUMB_HEIGHT,
       )
       content += u'</div> '
-      content += u'<a id="{image_id}" class="photos-thumbnail photos-thumbnail-mobile" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
+      content += u'<a class="photos-thumbnail-mobile" rel="gallery-mobile" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
         display_url = display_url,
         download_url = download_url,
         thumb_url = thumb_url,
