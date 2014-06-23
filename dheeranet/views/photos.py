@@ -11,6 +11,7 @@ from boto.s3.key import Key
 import os, glob
 import json
 from hashlib import sha1
+import random
 
 PHOTOS_BUCKET = static_bucket
 PHOTOS_PREFIX = 'photos/'
@@ -37,6 +38,20 @@ def show():
   content = generate_photos_home()
 
   return render_template('page.html',title=u'{|en:photos|zh:相冊|}',content=content)
+
+@photos.route('/banner')
+def show_banner():
+  banner_list = s3_get_cached(PHOTOS_BUCKET,
+                  PHOTOS_PREFIX + '__banner__',
+                  timeout = 86400).split('\n')
+  banner_list = filter(lambda x: x.strip()!='', banner_list)
+  banner_list = map(lambda x:x.split(','), banner_list)
+  banner_list = random.sample(banner_list, 10)
+  urls = map(lambda x:album_get_url(x[0], x[1], PHOTOS_FORMAT_SMALL), banner_list)
+  return render_template('photos-banner.html',
+    title = u'banner',
+    urls = urls
+  )
 
 @photos.route('/download')
 def show_download():

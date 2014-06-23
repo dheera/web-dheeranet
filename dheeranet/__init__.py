@@ -62,9 +62,6 @@ app.jinja_env.filters['lang'] = lang
 from views.home import home
 app.register_blueprint(home)
 
-from views.banner import banner
-app.register_blueprint(banner)
-
 from views.photos import photos
 app.register_blueprint(photos,url_prefix='/photos')
 

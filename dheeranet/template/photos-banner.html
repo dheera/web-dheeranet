@@ -1,0 +1,118 @@
+<!doctype html>
+<html><head>
+<script type="text/javascript" src="/static/js/jquery-2.0.3.min.js"></script>
+<script type="text/javascript" src="/static/js/jquery.transit.min.js"></script>
+<meta charset="UTF-8">
+<style type="text/css">
+<!--
+html {
+  width:100%;
+  height:100%;
+}
+
+body {
+  margin:0;
+  width:100%;
+  height:100%;
+  overflow: hidden;
+}
+
+#cover {
+  position:fixed;
+  z-index:10000;
+  top:0px;
+  lefT:0px;
+  width:100%;
+  height:100%;
+}
+
+.slide {
+  visibility:hidden;
+  position:fixed;
+  top:0px;
+  left:0px;
+  width:100%;
+  height:100%;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+.slide img {
+  width:100%;
+  position:absolute;
+  top:0px;
+  left:0px;
+  backface-visibility: hidden;
+  -webkit-backface-visibility: hidden;
+}
+
+-->
+</style>
+</head><body>
+<div id="cover" style="position:absolute;top:0px;left:0px;"></div>
+{% for url in urls %}
+  <div class="slide">
+    <img src="{{ url }}" style="border-left:5px solid white;width:980px;">
+  </div>
+{% endfor %}
+<script type="text/javascript">
+var i_current=0;
+var i_total=0;
+
+function doSlide(init) {
+  if(init) {
+    i_next=0;
+  } else {
+    i_next=i_current+1;
+    if(i_next>=i_total) i_next=0;
+  }
+
+  $($('.slide')[i_current]).children('img').each(function(i) {
+    var t = $(this);
+    var newState = { duration:0 };
+    newState['opacity'] = 1;
+    t.transition(newState);
+  });
+
+  $($('.slide')[i_next]).css('visibility','visible');
+  $($('.slide')[i_next]).css('z-index','2');
+  $($('.slide')[i_current]).css('z-index','1');
+
+  if(!init) {
+    $($('.slide')[i_next]).transition({x:'100%',duration:0});
+    $($('.slide')[i_next]).transition({x:'0%', duration:1000});
+  }
+
+  $($('.slide')[i_next]).children('img').each(function(i) {
+    var t = $(this);
+    var d = t.data();
+    var newState = { duration:6000 };
+    newState['opacity'] = 1;
+    t.transition(newState);
+  });
+
+  if(!init) {
+    $($('.slide')[i_current]).transition({x:'0%',duration:0});
+    $($('.slide')[i_current]).transition({x:'-100%', duration:1000});
+  }
+
+  window.setTimeout('doSlide()',6000);
+  i_current = i_next;
+}
+
+$(function() {
+  $('#banner-cover')
+    .bind('contextmenu',function(event){
+      event.preventDefault();
+      return false;
+    })
+
+  i_total = $('.slide').length;
+  window.setTimeout('doSlide(true)',0);
+  $('#slide0').children('img').each(function(i) {
+    var t = $(this);
+  });
+});
+</script>
+</body</html>
+
