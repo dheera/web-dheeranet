@@ -269,14 +269,14 @@ h2 {
 .subnavbar-mobile li:before {
   content:"/";
   color:#c0c0c0;
-  padding-right:15px;
+  padding-right:8px;
 }
 
 .subnavbar-mobile li {
   display:inline-block;
   text-align:left;
   font-size:16px;
-  margin-right:15px;
+  margin-right:8px;
   font-family: mainfont;
 }
 
