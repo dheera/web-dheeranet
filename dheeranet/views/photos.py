@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import Blueprint, render_template, abort, Response, send_file, send_from_directory
+from flask import Blueprint, render_template, abort, Response, send_file, send_from_directory, request
 from jinja2 import TemplateNotFound
 from subprocess import call
 from dheeranet import static_bucket
@@ -38,6 +38,24 @@ def show():
 
   return render_template('page.html',title=u'{|en:photos|zh:相冊|}',content=content)
 
+@photos.route('/download')
+def show_download():
+  content =''
+  if request.args.get('album') and request.args.get('filename'):
+    return render_template('photos-download.html',
+        title=u'{|en:download original|zh:下載原始照片|}',
+        preview_url = album_get_url(
+          request.args.get('album'),
+          request.args.get('filename'),
+          pic_format = PHOTOS_FORMAT_SMALL),
+        download_url = album_get_url(
+          request.args.get('album'),
+          request.args.get('filename'),
+          pic_format = PHOTOS_FORMAT_ORIGINAL),
+      )
+  else:
+    abort(404)
+
 @photos.route('/<path:album>')
 def show_album(album):
   content = u''
@@ -58,12 +76,15 @@ def show_album(album):
   for filename in album_filenames:
     if filename.endswith('.jpg'):
       display_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL)
-      download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL)
+      download_url = "/photos/download?album={album}&filename={filename}".format(
+        album = album,
+        filename = filename
+      )
       thumb_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB)
       content += u'<div class="photos-thumbnail-container">';
-      content += u'<div class="photos-thumbnail-download" style="position:absolute;z-index:1;width:24px;height:24px;opacity:0;-webkit-transition:opacity 0.5s ease;"><a title="{{|en:Download original size|zh:下載原始大小|}}" href="{}"><img style="border:0;padding:0;margin:0;width:24px;height:24px;" src="http://static.dheera.net/images/photos-download-button.png"></a></div>'.format(download_url)
+      content += u'<div class="photos-thumbnail-download" style="position:absolute;z-index:1;width:24px;height:24px;opacity:0;-webkit-transition:opacity 0.5s ease;"><a target="_new" title="{{|en:Download original size|zh:下載原始大小|}}" href="{}"><img style="border:0;padding:0;margin:0;width:24px;height:24px;" src="http://static.dheera.net/images/photos-download-button.png"></a></div>'.format(download_url)
 
-      content += u'<a id="{image_id}" class="photos-thumbnail" rel="gallery" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a>'.format(
+      content += u'<a id="{image_id}" class="photos-thumbnail" rel="gallery" href="{display_url}"><img src="{thumb_url}" style="width:{width}px;height:{height}px;"></a>'.format(
         display_url = display_url,
         download_url = download_url,
         thumb_url = thumb_url,
@@ -72,7 +93,7 @@ def show_album(album):
         height = PHOTOS_THUMB_HEIGHT,
       )
       content += u'</div> '
-      content += u'<a class="photos-thumbnail-mobile" rel="gallery-mobile" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
+      content += u'<a class="photos-thumbnail-mobile" rel="gallery-mobile" href="{display_url}"><img src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
         display_url = display_url,
         download_url = download_url,
         thumb_url = thumb_url,

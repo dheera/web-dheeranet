@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 {% block title %}{{ title|lang }}{% endblock %}
-{% block content %}
+{% block main %}
 <div class="content_page">
   <div>
     {%- if subnavbar -%}
@@ -26,7 +26,9 @@
     </h1>
   </div><br><br>
   <div>
+    {% block content %}
     {{ content|lang|safe }}
+    {% endblock %}
   </div>
 </div>
 {% endblock %}
