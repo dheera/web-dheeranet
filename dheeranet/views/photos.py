@@ -12,6 +12,7 @@ import os, glob
 import json
 from hashlib import sha1
 import random
+import datetime
 
 PHOTOS_BUCKET = static_bucket
 PHOTOS_PREFIX = 'photos/'
@@ -41,6 +42,8 @@ def show():
 
 @photos.route('/banner')
 def show_banner():
+  now = datetime.datetime.now()
+  random.seed((now.year, now.month, now.day, now.hour))
   banner_list = s3_get_cached(PHOTOS_BUCKET,
                   PHOTOS_PREFIX + '__banner__',
                   timeout = 86400).split('\n')
