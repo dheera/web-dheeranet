@@ -197,6 +197,22 @@ h2 {
   border-bottom:none;
 }
 
+.mobile-lang {
+  font-size:14px !important;
+}
+
+.mobile-lang-active {
+  text-decoration:none !important;
+  font-weight:bold !important;
+  color:#ffffff !important;
+}
+
+.mobile-lang-inactive {
+  text-decoration:none !important;
+  font-weight:normal !important;
+  color:#d0d0d0 !important;
+}
+
 .navbar-lang {
   font-size:12px !important;
   padding-right:50px !important;

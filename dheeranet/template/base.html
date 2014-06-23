@@ -55,10 +55,19 @@
 
   <div class="content">{% block main %}{% endblock %}</div>
   <div class="footer">
+    <div class="mobile-only mobile-lang">
+      {% filter lang %}
+        <nobr><a class="{|en:mobile-lang-active|zh:mobile-lang-inactive|}" href="?lang=en">EN</a>
+        &nbsp;&nbsp;&nbsp;&nbsp;|&nbsp;&nbsp;&nbsp;&nbsp;
+        <a class="{|en:mobile-lang-inactive|zh:mobile-lang-active|}" href="?lang=zh">中文</a></nobr>
+      {% endfilter %}
+    </div>
     <div>
-      {%- block footer -%}
-      <b>&copy; 2014 dheera venkatraman <span style="color:#b8b8b8;">&lt;dheera at dheera dot net&gt;</span></b><br>Photos on this website may be shared and used freely with attribution under the <a style="color:#44b0cc;" href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA 4.0</a> license.
-      {%- endblock -%}
+      {% block footer %}
+      {% filter lang %}
+      <b>&copy; 2014 dheera venkatraman <span style="color:#b8b8b8;">&lt;dheera at dheera dot net&gt;</span></b><br>{|en:Photos on this website may be shared and used freely with attribution under the <a style="color:#44b0cc;" href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA 4.0</a> license.|zh:本網站所有照片可據<a style="color:#44b0cc;" href="https://creativecommons.org/licenses/by-sa/4.0/">CC-BY-SA 4.0</a>協議條款自由分享或使用。|}
+      {% endfilter %}
+      {% endblock %}
     </div>
   </div>
   <div id="loading" class="loading"></div>
