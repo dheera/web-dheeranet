@@ -258,29 +258,20 @@ h2 {
   border:0;
 }
 
-.subnavbar_mobile {
+.subnavbar-mobile {
   display:none;
-  float:right;
-  margin-top:30px;
-  margin-right:15px;
 }
 
-.subnavbar_mobile select {
-  cursor:pointer;
-  cursor:hand;
-  background:#ffffff;
-  color:#000000;
-  border:0;
+.subnavbar-mobile ul {
+  padding-left:4px;
+}
+
+.subnavbar-mobile li {
   display:inline-block;
-  vertical-align:middle;
-  text-align:center;
-  padding:7px;
+  text-align:left;
+  font-size:16px;
+  margin-right:15px;
   font-family: mainfont;
-  font-size: 17px;
-}
-
-.subnavbar_mobile select:focus {
-  outline:0;
 }
 
 .content_title {
@@ -581,8 +572,11 @@ border:0;
   .subnavbar, .navbar {
     display: none;
   }
-  .subnavbar_mobile, .navbar-mobile-button {
+  .navbar-mobile-button {
     display:inline-block;
+  }
+  .subnavbar-mobile {
+    display:block;
   }
   .home_top {
     display:block;

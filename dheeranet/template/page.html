@@ -2,29 +2,29 @@
 {% block title %}{{ title|lang }}{% endblock %}
 {% block main %}
 <div class="content_page">
-  <div>
+  <div style="padding-bottom:35px;">
     {%- if subnavbar -%}
     <div style="display:inline-block">
       <h1 class="content_title">{{ title|lang|e }}</h1>
-    </div><div style="display:inline-block">
-      <ul class="subnavbar">
+    </div>
+    <div class="subnavbar">
+      <ul>
       {%- for href, id, caption in subnavbar -%}
         <li{% if href==request.path %} class="subnavbar_active"{% endif %}><a href="{{ href|e }}">{{ caption|lang|e }}</a></li>
       {%- endfor -%}
       </ul>
     </div>
-    <div class="subnavbar_mobile">
-        <select onchange="if(this.value!=='') { $('#loading').show(); window.location.href=this.value; }">
-        {%- for href, id, caption in subnavbar -%}
-          <option value="{{ href }}"{% if href==request.path %} selected="selected"{% endif %}>{{ caption|lang|e }}</option>
-        {%- endfor -%}
-        </select>
+    <div class="subnavbar-mobile">
+      <ul>
+      {%- for href, id, caption in subnavbar -%}
+        <li{% if href==request.path %} class="subnavbar_active"{% endif %}><a href="{{ href|e }}">{{ caption|lang|e }}</a></li>
+      {%- endfor -%}
+      </ul>
     </div>
     {% else %}
-      <h1 class="content_title">{{ title|lang|e }}
+      <h1 class="content_title">{{ title|lang|e }}</h1>
     {%- endif -%}
-    </h1>
-  </div><br><br>
+  </div>
   <div>
     {% block content %}
     {{ content|lang|safe }}
