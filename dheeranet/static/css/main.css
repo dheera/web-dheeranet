@@ -338,6 +338,15 @@ h2 {
   line-height:1em;
 }
 
+.photos-thumbnail-container {
+  display:inline-block;
+  position:relative;
+}
+
+.photos-thumbnail-mobile {
+  display:none;
+}
+
 .photos-thumbnail {
   display:inline-block;
   margin-top:0px;
@@ -421,8 +430,8 @@ border:0;
 }
 
 .photos-album-title {
-  padding-top:20px;
-  padding-bottom:20px;
+  padding-top:15px;
+  padding-bottom:25px;
   width:100%;
   font-size:18px;
   line-height:1.5em;
@@ -499,13 +508,10 @@ border:0;
   }
 }
 
-.photos-thumbnail-container {
-  display:inline-block;
-  position:relative;
-}
-
-.photos-thumbnail-mobile {
-  display:none;
+@media screen and (min-width: 551px) {
+  .mobile-only {
+    display:none;
+  }
 }
 
 @media screen and (max-width: 550px) and (min-width: 100px) {
