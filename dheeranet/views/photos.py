@@ -133,8 +133,9 @@ def list_albums(path, create=False, force_recache = False):
 @cached()
 def generate_photos_home():
   content = ''
-  index_key = PHOTOS_BUCKET.get_key(PHOTOS_PREFIX + '__featured__')
-  index = json.loads(index_key.get_contents_as_string().decode('utf-8'))
+  index = json.loads(s3_get_cached(PHOTOS_BUCKET,
+                  PHOTOS_PREFIX + '__featured__',
+                  timeout = 1200))
 
   for index_section in index:
     content += u'<h2>{}</h2>'.format(index_section['title'])
