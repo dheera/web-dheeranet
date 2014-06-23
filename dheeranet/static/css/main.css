@@ -509,6 +509,9 @@ border:0;
   .mobile-only {
     display:none;
   }
+  .photos-thumbnail-mobile {
+    display:none;
+  }
 }
 
 @media screen and (max-width: 550px) and (min-width: 100px) {
