@@ -93,7 +93,7 @@ def show_album(album):
         height = PHOTOS_THUMB_HEIGHT,
       )
       content += u'</div> '
-      content += u'<a class="photos-thumbnail-mobile" rel="gallery-mobile" href="{display_url}"><img src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
+      content += u'<a class="photos-thumbnail-mobile" rel="gallery-mobile" href="{display_url}"><img src="{thumb_url}"></a> '.format(
         display_url = display_url,
         download_url = download_url,
         thumb_url = thumb_url,
