@@ -7,6 +7,7 @@ import sys, os, shutil, signal
 from dheeranet.views import photos
 from subprocess import call, check_output
 from tempfile import mkdtemp
+from time import sleep
 
 tempdir = mkdtemp();
 tempdir_watermark = mkdtemp();
@@ -32,6 +33,8 @@ albums = photos.list_albums('places', force_recache=True) + \
          photos.list_albums('abstract', force_recache=True) + \
          photos.list_albums('things', force_recache=True)
 
+process_count = 0
+
 for album in albums:
 
   print("listing album {0} ... ".format(album), end='')
@@ -52,10 +55,15 @@ for album in albums:
   sys.stdout.flush()
 
   for filename in filenames_original:
+
   
     if(filename.endswith('.jpg')):
   
       if not filename in filenames_small:
+        process_count += 1
+        if process_count % 32 == 0:
+          sleep(5)
+
         print("  creating small for {0} ".format(filename), end='')
         sys.stdout.flush()
   
@@ -137,6 +145,10 @@ for album in albums:
         sys.stdout.flush()
   
       if not filename in filenames_large:
+        process_count += 1
+        if process_count % 32 == 0:
+          sleep(5)
+
         print("  creating large for {0} ".format(filename), end='')
         sys.stdout.flush()
   
@@ -220,6 +232,10 @@ for album in albums:
   
   
       if not filename in filenames_thumb:
+        process_count += 1
+        if process_count % 32 == 0:
+          sleep(5)
+
         print("  creating thumb for {0} ".format(filename), end='')
         sys.stdout.flush()
   
@@ -251,6 +267,10 @@ for album in albums:
         sys.stdout.flush()
 
       if not filename in filenames_thumb2:
+        process_count += 1
+        if process_count % 32 == 0:
+          sleep(5)
+
         print("  creating thumb2 for {0} ".format(filename), end='')
         sys.stdout.flush()
   

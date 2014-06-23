@@ -170,7 +170,9 @@ def generate_photos_home():
   return content
 
 def album_get_info(album, create=False):
-  info_json = s3_get_cached(PHOTOS_BUCKET, PHOTOS_PREFIX + album + '/__info__')
+  info_json = s3_get_cached(PHOTOS_BUCKET,
+                PHOTOS_PREFIX + album + '/__info__',
+                timeout = 86400)
   if info_json:
     try:
       info = json.loads(info_json)
