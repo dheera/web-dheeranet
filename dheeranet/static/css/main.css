@@ -266,6 +266,12 @@ h2 {
   padding-left:4px;
 }
 
+.subnavbar-mobile li:before {
+  content:"/";
+  color:#c0c0c0;
+  padding-right:15px;
+}
+
 .subnavbar-mobile li {
   display:inline-block;
   text-align:left;
