@@ -40,7 +40,7 @@ def show():
 
 @photos.route('/<path:album>')
 def show_album(album):
-  content = ''
+  content = u''
   album = album.strip('/')
 
   album_info = album_get_info(album)
@@ -53,14 +53,26 @@ def show_album(album):
   if 'description' in album_info:
     content += album_info['description'] + '<br><br>'
 
-  content += '<div class="photos-thumbnail-set noselect">'
+  content += u'<div class="photos-thumbnail-set noselect">'
 
   for filename in album_filenames:
     if filename.endswith('.jpg'):
       display_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL)
       download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL)
       thumb_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB)
-      content += '<a id="{image_id}" class=\"photos-thumbnail clickable\" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
+      content += u'<div class="photos-thumbnail-container">';
+      content += u'<div class="photos-thumbnail-download" style="position:absolute;z-index:1;width:24px;height:24px;opacity:0;-webkit-transition:opacity 0.5s ease;"><a title="{{|en:Download original size|zh:下載原始大小|}}" href="{}"><img style="border:0;padding:0;margin:0;width:24px;height:24px;" src="http://static.dheera.net/images/photos-download-button.png"></a></div>'.format(download_url)
+
+      content += u'<a id="{image_id}" class=\"photos-thumbnail\" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a>'.format(
+        display_url = display_url,
+        download_url = download_url,
+        thumb_url = thumb_url,
+        image_id = filename.replace('.jpg',''),
+        width = PHOTOS_THUMB_WIDTH,
+        height = PHOTOS_THUMB_HEIGHT,
+      )
+      content += u'</div> '
+      content += u'<a id="{image_id}" class="photos-thumbnail photos-thumbnail-mobile" href="{display_url}"><img data-download="{download_url}" src="{thumb_url}" style="width:{width}px;height:{height}px;"></a> '.format(
         display_url = display_url,
         download_url = download_url,
         thumb_url = thumb_url,
@@ -69,7 +81,7 @@ def show_album(album):
         height = PHOTOS_THUMB_HEIGHT,
       )
 
-  content += '</div>'
+  content += u'</div>'
 
   return render_template('page.html',title=album_info['title'],content=content)
 
