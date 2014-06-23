@@ -2,7 +2,7 @@
 <html><head>
 <script type="text/javascript" src="/static/js/jquery-2.0.3.min.js"></script>
 <script type="text/javascript" src="/static/js/jquery.transit.min.js"></script>
-<meta name="viewport" content="width=1024, initial-scale=1, maximum-scale=1">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
 <meta charset="UTF-8">
 <style type="text/css">
 <!--
@@ -53,7 +53,7 @@ body {
 <div id="cover" style="position:absolute;top:0px;left:0px;"></div>
 {% for url in urls %}
   <div class="slide">
-    <img src="{{ url }}" style="border-left:5px solid white;width:980px;margin-left:-5px;">
+    <img src="{{ url }}" style="border-left:5px solid white;width:100%;margin-left:-5px;">
   </div>
 {% endfor %}
 <script type="text/javascript">
