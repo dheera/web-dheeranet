@@ -104,10 +104,12 @@ h1 {
   font-weight:normal;
   margin-top:0;padding-top:0;
   margin-bottom:0;padding-bottom:0;
+  line-height:60px;
 }
 
 h2 {
   font-size:40px;
+  line-height:48px;
   color:#808080;
   font-weight:normal;
 }
