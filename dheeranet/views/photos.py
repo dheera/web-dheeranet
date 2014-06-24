@@ -121,14 +121,14 @@ def show_album(album):
     print "error: ", sys.exc_info()[0]
     abort(500)
 
-def list_albums(path, create=False, force_recache = False):
+def list_albums(path, force_recache = False):
   albums = s3_list_cached(PHOTOS_BUCKET,
     PHOTOS_PREFIX + path + '/', '/',
     force_recache = force_recache)
   albums = map(lambda(k): k.strip('/').replace('photos/',''), albums)
   if path in albums:
     albums.remove(path)
-  return [album for album in albums if album_get_info(album, create=create)]
+  return [album for album in albums if album_get_info(album)]
 
 @cached()
 def generate_photos_home():
@@ -201,7 +201,7 @@ def generate_photos_home():
 
   return content
 
-def album_get_info(album, create=False):
+def album_get_info(album):
   info_json = s3_get_cached(PHOTOS_BUCKET,
                 PHOTOS_PREFIX + album + '/__info__',
                 timeout = 86400)
@@ -217,20 +217,6 @@ def album_get_info(album, create=False):
       return info
     except ValueError, e:
       print "error: invalid json: %s" % info_json
-      return None
-  elif create == True:
-    filenames = album_list_filenames(album)
-    if len(filenames)>1 and filenames[0].endswith('.jpg'):
-      info = {}
-      info['album'] = album
-      info['title'] = album
-      info['cover'] = filenames[0]
-      info['date'] = None
-      info['description'] = ''
-      key = PHOTOS_BUCKET.new_key(PHOTOS_PREFIX + album + '/__info__')
-      key.set_contents_from_string(json.dumps(info))
-      return info
-    else:
       return None
   else:
     return None
