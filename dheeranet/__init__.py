@@ -4,11 +4,23 @@
 from flask import Flask, request, render_template, send_file, send_from_directory, redirect
 from jinja2 import Markup
 from boto.s3.connection import S3Connection
+from cache import cached
 import re
+import socket
 
 s3 = S3Connection(open('.aws_id').read().strip(),open('.aws_secret').read().strip())
 
 static_bucket = s3.get_bucket('static.dheera.net')
+
+@cached()
+def revdns(ip):
+  if hasattr(socket, 'setdefaulttimeout'):
+    socket.setdefaulttimeout(2)
+  response = socket.gethostbyaddr(ip)
+  return response[0]
+
+def request_hostname():
+  return revdns(request.remote_addr)
 
 # parse multilingual HTML
 def lang(code):
@@ -58,6 +70,7 @@ def lang(code):
 app = Flask(__name__)
 app.jinja_options['extensions'].append('jinja2htmlcompress.HTMLCompress')
 app.jinja_env.filters['lang'] = lang
+app.jinja_env.globals.update(request_hostname=request_hostname)
 
 from views.home import home
 app.register_blueprint(home)
@@ -74,6 +87,15 @@ app.register_blueprint(pages)
 
 @app.after_request
 def after_request(response):
+
+  hostname = request_hostname()
+
+  if 'embarqhsd' in hostname:
+    return redirect('http://old.dheera.net/')
+
+  if 'nj.comcast' in hostname:
+    return redirect('http://old.dheera.net/')
+
   if response.headers['Content-Type'].find('image/')==0:
     response.headers['Cache-Control'] = 'max-age=7200, must-revalidate'
     response.headers['Expires'] = '0'
