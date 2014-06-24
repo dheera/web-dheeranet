@@ -103,6 +103,7 @@ def show_album(album):
       lambda filename:
         { 
          'album': album,
+         'id': filename.replace('.jpg',''),
          'filename': filename,
          'display_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL),
          'thumb_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB),
