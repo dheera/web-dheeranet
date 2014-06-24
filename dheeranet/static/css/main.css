@@ -44,7 +44,7 @@ html {
 
 body {
   margin:0;
-  font-family: mainfont;
+  font-family: mainfont, Droid Sans, Trebuchet MS, Verdana, Arial, Helvetica, sans-serif;
   font-size:18px;
   line-height:1.7em;
 }
@@ -95,7 +95,7 @@ a, a:link, a:visited {
 }
 
 h1, h2, h3 {
-  font-family: mainfont;
+  font-family: mainfont, Droid Sans, Trebuchet MS, Verdana, Arial, Helvetica, sans-serif;
 }
 
 h1 {
@@ -156,7 +156,7 @@ h2 {
   padding-left:10px;
   margin-left:10px;
   color:#606060;
-  font-family: mainfont;
+  font-family: mainfont, Droid Sans, Trebuchet MS, Verdana, Arial, Helvetica, sans-serif;
 }
 .navbar li:last-child {
   width:auto;
@@ -262,7 +262,7 @@ h2 {
   text-align:left;
   font-size:16px;
   margin-left:15px;
-  font-family: mainfont;
+  font-family: mainfont, Droid Sans, Trebuchet MS, Verdana, Arial, Helvetica, sans-serif;
 }
 
 .subnavbar a {
