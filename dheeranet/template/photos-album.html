@@ -1,0 +1,20 @@
+{% extends "page.html" %}
+{% set title = album_info['title'] %}
+
+{% block content %}
+{% filter lang %}
+
+  <div class="photos-thumbnail-set noselect">
+    {% for image in album_images %}
+
+      <div class="photos-thumbnail-container">
+        <div class="photos-thumbnail-download" style="position:absolute;z-index:1;width:24px;height:24px;opacity:0;-webkit-transition:opacity 0.5s ease;"><a target="_new" title="{|en:Download original size|zh:下載原始大小|}" href="{{ image['download_url'] }}"><img style="border:0;padding:0;margin:0;width:24px;height:24px;" src="http://static.dheera.net/images/photos-download-button.png"></a></div>
+        <a id="{{ image['id'] }}" class="photos-thumbnail" data-dl="{{ image['download_url'] }}" rel="gallery" href="{{ image['display_url'] }}"><img src="{{ image['thumb_url'] }}" style="width:140px;height:140px;"></a>
+      </div>
+      <a class="photos-thumbnail-mobile" rel="gallery-mobile" href="{{ image['display_url'] }}"><img src="{{ image['thumb_url'] }}"></a>
+
+    {% endfor %}
+  </div>
+
+{% endfilter %}
+{% endblock %}
