@@ -36,90 +36,70 @@ photos = Blueprint('photos', __name__,template_folder='../template')
 
 @photos.route('/')
 def show():
-  try:
-    content = generate_photos_home()
+  content = generate_photos_home()
 
-    return render_template('page.html',
-      title = u'{|en:photos|zh:相冊|}',
-      content = content
-    )
-
-  except Exception as e:
-    print "error: ", sys.exc_info()[0]
-    abort(500)
+  return render_template('page.html',
+    title = u'{|en:photos|zh:相冊|}',
+    content = content
+  )
 
 
 @photos.route('/banner')
 def show_banner():
-  try:
-    now = datetime.datetime.now()
-    random.seed((now.year, now.month, now.day, now.hour))
-    banner_list = s3_get_cached(PHOTOS_BUCKET,
-                    PHOTOS_PREFIX + '__banner__',
-                    timeout = 86400).split('\n')
-    banner_list = map(lambda x:x.strip().split(','), banner_list)
-    banner_list = filter(lambda x: len(x)==2, banner_list)
-    banner_list = random.sample(banner_list, 10)
-    urls = map(lambda x:album_get_url(x[0], x[1], PHOTOS_FORMAT_SMALL), banner_list)
+  now = datetime.datetime.now()
+  random.seed((now.year, now.month, now.day, now.hour))
+  banner_list = s3_get_cached(PHOTOS_BUCKET,
+                  PHOTOS_PREFIX + '__banner__',
+                  timeout = 86400).split('\n')
+  banner_list = map(lambda x:x.strip().split(','), banner_list)
+  banner_list = filter(lambda x: len(x)==2, banner_list)
+  banner_list = random.sample(banner_list, 10)
+  urls = map(lambda x:album_get_url(x[0], x[1], PHOTOS_FORMAT_SMALL), banner_list)
 
-    return render_template('photos-banner.html',
-      title = u'banner',
-      urls = urls
-    )
-
-  except Exception as e:
-    print "error: ", sys.exc_info()[0]
-    abort(500)
+  return render_template('photos-banner.html',
+    title = u'banner',
+    urls = urls
+  )
 
 
 @photos.route('/download/<path:album>/<filename>')
 def show_download(album, filename):
-  try:
-    album_info = album_get_info(album)
-    if not album_info:
-      abort(404)
+  album_info = album_get_info(album)
+  if not album_info:
+    abort(404)
 
-    return render_template('photos-download.html',
-      title = u'{|en:download original|zh:下載原始照片|}',
-      preview_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL),
-      download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL),
-    )
-
-  except Exception as e:
-    print "error: ", sys.exc_info()[0]
-    abort(500)
+  return render_template('photos-download.html',
+    title = u'{|en:download original|zh:下載原始照片|}',
+    preview_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL),
+    download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL),
+  )
 
 
 @photos.route('/<path:album>')
 def show_album(album):
-  try:
-    album = album.strip('/')
-    album_info = album_get_info(album)
-    if not album_info:
-      abort(404)
-    album_filenames = album_list_filenames(album)
+  album = album.strip('/')
+  album_info = album_get_info(album)
+  if not album_info:
+    abort(404)
+  album_filenames = album_list_filenames(album)
 
-    album_images = map(
-      lambda filename:
-        { 
-         'album': album,
-         'id': filename.replace('.jpg',''),
-         'filename': filename,
-         'display_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL),
-         'thumb_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB),
-         'download_url': '/photos/download/{}/{}'.format(album, filename)
-        },
-      album_filenames
-    )
+  album_images = map(
+    lambda filename:
+      { 
+       'album': album,
+       'id': filename.replace('.jpg',''),
+       'filename': filename,
+       'display_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL),
+       'thumb_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB),
+       'download_url': '/photos/download/{}/{}'.format(album, filename)
+      },
+    album_filenames
+  )
 
-    return render_template('photos-album.html',
-      album_info = album_info,
-      album_images = album_images,
-    )
-
-  except Exception as e:
-    print "error: ", sys.exc_info()[0]
-    abort(500)
+  return render_template('photos-album.html',
+    album_info = album_info,
+    album_images = album_images,
+  )
 
 def list_albums(path, force_recache = False):
   albums = s3_list_cached(PHOTOS_BUCKET,
