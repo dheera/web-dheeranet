@@ -560,7 +560,7 @@ border:0;
   }
   .photos-album {
     width:100%;
-    height:100px;
+    height:80px;
     display:table;
   }
   .photos-album-date {
@@ -570,16 +570,17 @@ border:0;
     vertical-align:middle;
     padding-top:0px;
     padding-bottom:0px;
-    width:250px;height:100px;
+    width:auto;height:80px;
+    padding-left:15px;
   }
   .photos-album-cover {
-    width:100px;
-    height:100px;
+    width:80px;
+    height:80px;
     display:table-cell;
   }
   .photos-album-cover img {
-    width:100px;
-    height:100px;
+    width:80px;
+    height:80px;
   }
   .photos-album-description {
     display:none;
