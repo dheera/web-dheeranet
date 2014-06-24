@@ -14,10 +14,13 @@ static_bucket = s3.get_bucket('static.dheera.net')
 
 @cached()
 def revdns(ip):
-  if hasattr(socket, 'setdefaulttimeout'):
-    socket.setdefaulttimeout(2)
-  response = socket.gethostbyaddr(ip)
-  return response[0]
+  try:
+    if hasattr(socket, 'setdefaulttimeout'):
+      socket.setdefaulttimeout(2)
+    response = socket.gethostbyaddr(ip)
+    return response[0]
+  except Exception:
+    return None
 
 def request_hostname():
   return revdns(request.remote_addr)
@@ -89,12 +92,12 @@ app.register_blueprint(pages)
 def after_request(response):
 
   hostname = request_hostname()
+  if hostname:
+    if 'embarqhsd' in hostname:
+      return redirect('http://old.dheera.net/')
 
-  if 'embarqhsd' in hostname:
-    return redirect('http://old.dheera.net/')
-
-  if 'nj.comcast' in hostname:
-    return redirect('http://old.dheera.net/')
+    if 'nj.comcast' in hostname:
+      return redirect('http://old.dheera.net/')
 
   if response.headers['Content-Type'].find('image/')==0:
     response.headers['Cache-Control'] = 'max-age=7200, must-revalidate'
