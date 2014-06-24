@@ -8,7 +8,7 @@ from dheeranet import static_bucket
 from dheeranet.cache import cache, cached, s3_get_cached, s3_list_cached
 from dheeranet.slugify import slugify
 from boto.s3.key import Key
-import os, glob
+import os, glob, sys
 import json
 from hashlib import sha1
 import random
@@ -36,93 +36,89 @@ photos = Blueprint('photos', __name__,template_folder='../template')
 
 @photos.route('/')
 def show():
-  content = generate_photos_home()
+  try:
+    content = generate_photos_home()
 
-  return render_template('page.html',title=u'{|en:photos|zh:相冊|}',content=content)
+    return render_template('page.html',
+      title = u'{|en:photos|zh:相冊|}',
+      content = content
+    )
+
+  except Exception as e:
+    print "error: ", sys.exc_info()[0]
+    abort(500)
+
 
 @photos.route('/banner')
 def show_banner():
-  now = datetime.datetime.now()
-  random.seed((now.year, now.month, now.day, now.hour))
-  banner_list = s3_get_cached(PHOTOS_BUCKET,
-                  PHOTOS_PREFIX + '__banner__',
-                  timeout = 86400).split('\n')
-  banner_list = filter(lambda x: x.strip()!='', banner_list)
-  banner_list = map(lambda x:x.split(','), banner_list)
-  banner_list = random.sample(banner_list, 10)
-  urls = map(lambda x:album_get_url(x[0], x[1], PHOTOS_FORMAT_SMALL), banner_list)
-  return render_template('photos-banner.html',
-    title = u'banner',
-    urls = urls
-  )
+  try:
+    now = datetime.datetime.now()
+    random.seed((now.year, now.month, now.day, now.hour))
+    banner_list = s3_get_cached(PHOTOS_BUCKET,
+                    PHOTOS_PREFIX + '__banner__',
+                    timeout = 86400).split('\n')
+    banner_list = map(lambda x:x.strip().split(','), banner_list)
+    banner_list = filter(lambda x: len(x)==2, banner_list)
+    banner_list = random.sample(banner_list, 10)
+    urls = map(lambda x:album_get_url(x[0], x[1], PHOTOS_FORMAT_SMALL), banner_list)
 
-@photos.route('/download')
-def show_download():
-  content =''
-  if request.args.get('album') and request.args.get('filename'):
+    return render_template('photos-banner.html',
+      title = u'banner',
+      urls = urls
+    )
+
+  except Exception as e:
+    print "error: ", sys.exc_info()[0]
+    abort(500)
+
+
+@photos.route('/download/<path:album>/<filename>')
+def show_download(album, filename):
+  try:
+    album_info = album_get_info(album)
+    if not album_info:
+      abort(404)
+
     return render_template('photos-download.html',
-        title=u'{|en:download original|zh:下載原始照片|}',
-        preview_url = album_get_url(
-          request.args.get('album'),
-          request.args.get('filename'),
-          pic_format = PHOTOS_FORMAT_SMALL),
-        download_url = album_get_url(
-          request.args.get('album'),
-          request.args.get('filename'),
-          pic_format = PHOTOS_FORMAT_ORIGINAL),
-      )
-  else:
-    abort(404)
+      title = u'{|en:download original|zh:下載原始照片|}',
+      preview_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL),
+      download_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_ORIGINAL),
+    )
+
+  except Exception as e:
+    print "error: ", sys.exc_info()[0]
+    abort(500)
+
 
 @photos.route('/<path:album>')
 def show_album(album):
-  content = u''
-  album = album.strip('/')
+  try:
+    album = album.strip('/')
+    album_info = album_get_info(album)
+    if not album_info:
+      abort(404)
+    album_filenames = album_list_filenames(album)
 
-  album_info = album_get_info(album)
+    album_images = map(
+      lambda filename:
+        { 
+         'album': album,
+         'filename': filename,
+         'display_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL),
+         'thumb_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB),
+         'download_url': '/photos/download/{}/{}'.format(album, filename)
+        },
+      album_filenames
+    )
 
-  if not album_info:
-    abort(404)
+    return render_template('photos-album.html',
+      album_info = album_info,
+      album_images = album_images,
+    )
 
-  album_filenames = album_list_filenames(album)
-
-  if 'description' in album_info:
-    content += album_info['description'] + '<br><br>'
-
-  content += u'<div class="photos-thumbnail-set noselect">'
-
-  for filename in album_filenames:
-    if filename.endswith('.jpg'):
-      display_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL)
-      download_url = "/photos/download?album={album}&filename={filename}".format(
-        album = album,
-        filename = filename
-      )
-      thumb_url = album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB)
-      content += u'<div class="photos-thumbnail-container">';
-      content += u'<div class="photos-thumbnail-download" style="position:absolute;z-index:1;width:24px;height:24px;opacity:0;-webkit-transition:opacity 0.5s ease;"><a target="_new" title="{{|en:Download original size|zh:下載原始大小|}}" href="{}"><img style="border:0;padding:0;margin:0;width:24px;height:24px;" src="http://static.dheera.net/images/photos-download-button.png"></a></div>'.format(download_url)
-
-      content += u'<a id="{image_id}" class="photos-thumbnail" rel="gallery" href="{display_url}"><img src="{thumb_url}" style="width:{width}px;height:{height}px;"></a>'.format(
-        display_url = display_url,
-        download_url = download_url,
-        thumb_url = thumb_url,
-        image_id = filename.replace('.jpg',''),
-        width = PHOTOS_THUMB_WIDTH,
-        height = PHOTOS_THUMB_HEIGHT,
-      )
-      content += u'</div> '
-      content += u'<a class="photos-thumbnail-mobile" rel="gallery-mobile" href="{display_url}"><img src="{thumb_url}"></a> '.format(
-        display_url = display_url,
-        download_url = download_url,
-        thumb_url = thumb_url,
-        image_id = filename.replace('.jpg',''),
-        width = PHOTOS_THUMB_WIDTH,
-        height = PHOTOS_THUMB_HEIGHT,
-      )
-
-  content += u'</div>'
-
-  return render_template('page.html',title=album_info['title'],content=content)
+  except Exception as e:
+    print "error: ", sys.exc_info()[0]
+    abort(500)
 
 def list_albums(path, create=False, force_recache = False):
   albums = s3_list_cached(PHOTOS_BUCKET,
@@ -244,8 +240,7 @@ def album_list_filenames(album, pic_format = PHOTOS_FORMAT_ORIGINAL, force_recac
     force_recache = force_recache)
   filenames = map(lambda(k): k.strip('/'), filenames)
   filenames = map(lambda(s): s[s.rfind('/')+1:], filenames)
-  if '' in filenames:
-    filenames.remove('')
+  filenames = filter(lambda x: x.endswith('.jpg') or x.endswith('.png'), filenames)
   return filenames
 
 def album_get_url(album,filename,pic_format=PHOTOS_FORMAT_ORIGINAL):
