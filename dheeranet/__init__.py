@@ -85,10 +85,6 @@ app.register_blueprint(photos,url_prefix='/photos')
 def send_foo(filename):
     return send_from_directory('static', filename)
 
-@app.route('/resume.pdf')
-def send_resume():
-  return redirect('http://static.dheera.net/docs/resume.pdf')
-
 from views.pages import pages
 app.register_blueprint(pages)
 
