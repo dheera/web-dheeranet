@@ -4,7 +4,7 @@
 from flask import Flask, request, render_template, send_file, send_from_directory, redirect
 from jinja2 import Markup
 from boto.s3.connection import S3Connection
-from cache import cached
+from cache import cached, s3_get_cached
 import re
 import socket
 
@@ -84,6 +84,10 @@ app.register_blueprint(photos,url_prefix='/photos')
 @app.route('/static/<path:filename>')
 def send_foo(filename):
     return send_from_directory('static', filename)
+
+@app.route('/resume.pdf')
+def send_resume():
+  return redirect('http://static.dheera.net/docs/resume.pdf')
 
 from views.pages import pages
 app.register_blueprint(pages)
