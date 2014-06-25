@@ -20,7 +20,7 @@ def show(path):
     params_json, content = page.split('\n\n',1);
     params = json.loads(params_json)
 
-    if params['redirect']:
+    if 'redirect' in params:
       return redirect(params['redirect'])
 
     if 'title' not in params:
