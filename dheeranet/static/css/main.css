@@ -367,6 +367,23 @@ h2 {
   position:relative;
 }
 
+.photos-thumbnail-download {
+  position:absolute;
+  z-index:1;
+  width:24px;
+  height:24px;
+  opacity:0;
+  -webkit-transition:opacity 0.5s ease;
+}
+
+.photos-thumbnail-download img {
+  border:0;
+  padding:0;
+  margin:0;
+  width:24px;
+  height:24px;
+}
+
 .photos-thumbnail-mobile {
   display:none;
 }
