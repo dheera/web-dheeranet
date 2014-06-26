@@ -9,7 +9,7 @@
 
     {% for album in section['albums'][0:8] %}
 
-      <div class="photos-album noselect" onclick="window.location.href='/photos/{{ album['album'] }}}';">
+      <div class="photos-album noselect" onclick="window.location.href='/photos/{{ album['album'] }}';">
 
         {% if 'description_short' in album %}
           <div class="photos-album-description">
