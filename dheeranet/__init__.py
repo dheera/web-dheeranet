@@ -88,6 +88,10 @@ app.register_blueprint(photos,url_prefix='/photos')
 def send_foo(filename):
     return send_from_directory('static', filename)
 
+@app.route('/favicon.ico')
+def send_favicon():
+    return send_file('static/favicon.ico')
+
 from views.pages import pages
 app.register_blueprint(pages)
 
@@ -114,7 +118,7 @@ def after_request(response):
 
   if 'lang' in request.args:
     response.set_cookie('lang', request.args['lang'])
-
+  print response.headers
   return response
 
 if __name__ == '__main__':
