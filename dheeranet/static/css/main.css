@@ -96,6 +96,23 @@ body {
   -webkit-user-select:none;
 }
 
+.like-buttons {
+  line-height:0em;
+  text-align:center;
+  display:table-cell;
+  width:100%;
+  vertical-align:middle;
+  color:#a0a0a0;
+  padding-top:30px;
+}
+
+.like-buttons img {
+  margin-left:20px;
+  vertical-align:middle;
+  width:20px;
+  height:20px;
+}
+
 a, a:link, a:visited {
   color:#0080cc;
   text-decoration:none;
