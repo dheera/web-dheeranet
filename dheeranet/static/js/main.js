@@ -28,10 +28,10 @@ $(document).ready(function() {
   $('.clickable').mouseenter(function(){$(this).addClass('clickable-hover');}).mouseleave(function(){$(this).removeClass('clickable-hover');}).mousedown(function(event){event.preventDefault();});
   $('.photos-like-container')
     .mouseenter(function(){
-      $(this).children('.photos-like-buttons').transition({'top':'0px'});
+      $(this).children('.photos-like-buttons').transition({'top':'0px','duration':200});
     })
     .mouseleave(function(){
-      $(this).children('.photos-like-buttons').transition({'top':'140px'});
+      $(this).children('.photos-like-buttons').transition({'top':'140px', 'duration':200});
     })
     .mousedown(function(event){
       event.preventDefault();}
