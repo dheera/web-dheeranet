@@ -5,7 +5,23 @@
 {% filter lang %}
 
   <div class="photos-thumbnail-set noselect">
+    {% set i = 0 %}
+    {% set like_target_i = randrange(6,12) %}
     {% for image in album_images %}
+      {% set i = i + 1 %}
+      {% if i==like_target_i %}
+        <div class="photos-like-container">\
+          <div class="photos-like-buttons">
+            <a class="clickable" style="top:25px;left:25px;position:absolute;" href="http://www.facebook.com/sharer.php?u=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/facebook.png"></a>
+            <a class="clickable" style="top:25px;left:70px;position:absolute;" href="http://v.t.sina.com.cn/share/share.php?title={{ title|lang|urlencode }}&amp;ralateUid=1935328294&amp;url=http://dheerae.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/weibo.png"></a>
+            <a class="clickable" style="top:70px;left:25px;position:absolute;" href="https://plus.google.com/share?url=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/gplus.png"></a>
+            <a class="clickable" style="top:70px;left:70px;position:absolute;" href="http://twitter.com/share?text={{ title|lang|urlencode }}&amp;url=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/twitter.png"></a>
+          </div>
+          <div class="photos-like">
+            Like this album? <b>Share it!</b>
+          </div>
+        </div>
+      {% endif %}
 
       <div class="photos-thumbnail-container">
         <div class="photos-thumbnail-download"><a target="_new" title="{|en:Download original size|zh:下載原始大小|}" href="{{ image['download_url'] }}"><img alt="Dowload" src="http://static.dheera.net/images/photos-download-button.png"></a></div>
@@ -15,6 +31,7 @@
 
     {% endfor %}
   </div>
+
 
 {% endfilter %}
 {% endblock %}

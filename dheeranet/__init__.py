@@ -7,6 +7,7 @@ from boto.s3.connection import S3Connection
 from cache import cached, s3_get_cached
 import re
 import socket
+from random import randrange
 
 s3 = S3Connection(open('.aws_id').read().strip(),open('.aws_secret').read().strip())
 
@@ -74,6 +75,8 @@ app = Flask(__name__)
 app.jinja_options['extensions'].append('jinja2htmlcompress.HTMLCompress')
 app.jinja_env.filters['lang'] = lang
 app.jinja_env.globals.update(request_hostname=request_hostname)
+app.jinja_env.globals.update(randrange=randrange)
+app.jinja_env.globals.update(request=request)
 
 from views.home import home
 app.register_blueprint(home)
