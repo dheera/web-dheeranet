@@ -77,6 +77,8 @@ app.jinja_env.filters['lang'] = lang
 app.jinja_env.globals.update(request_hostname=request_hostname)
 app.jinja_env.globals.update(randrange=randrange)
 app.jinja_env.globals.update(request=request)
+app.jinja_env.globals.update(enumerate=enumerate)
+app.jinja_env.globals.update(len=len)
 
 from views.home import home
 app.register_blueprint(home)
