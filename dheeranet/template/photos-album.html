@@ -12,7 +12,7 @@
       {% if i==like_target_i %}
         <div class="photos-like-container">
           <div class="photos-like">
-            Like this album? <b>Share it!</b>
+            {|en:Like this album? <b>Share it!</b>|zh:喜歡這個相冊？點擊分享！|}
           </div>
           <div class="photos-like-buttons">
             <a class="clickable" style="top:25px;left:25px;position:absolute;" href="http://www.facebook.com/sharer.php?u=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/facebook.png"></a>
@@ -24,7 +24,7 @@
       {% endif %}
 
       <div class="photos-thumbnail-container">
-        <div class="photos-thumbnail-download"><a target="_new" title="{|en:Download original size|zh:下載原始大小|}" href="{{ image['download_url'] }}"><img alt="Dowload" src="http://static.dheera.net/images/photos-download-button.png"></a></div>
+        <div class="photos-thumbnail-download"><a target="_new" title="{|en:Download original size|zh:下載原始大小|}" href="{{ image['download_url'] }}"><img alt="Download" src="http://static.dheera.net/images/photos-download-button.png"></a></div>
         <a id="{{ image['id'] }}" class="photos-thumbnail" data-dl="{{ image['download_url'] }}" rel="gallery" href="{{ image['display_url'] }}"><img alt="{{ image['id'] }}" src="{{ image['thumb_url'] }}" style="width:140px;height:140px;"></a>
       </div>
       <a class="photos-thumbnail-mobile" rel="gallery-mobile" href="{{ image['display_url'] }}"><img alt="{{ image['id'] }}" src="{{ image['thumb_url'] }}"></a>
