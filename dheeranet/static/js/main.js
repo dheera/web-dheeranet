@@ -26,6 +26,16 @@ for the JavaScript code in this page.
 $(document).ready(function() {
   $('.nodrag').mousedown(function(event){event.preventDefault();});
   $('.clickable').mouseenter(function(){$(this).addClass('clickable-hover');}).mouseleave(function(){$(this).removeClass('clickable-hover');}).mousedown(function(event){event.preventDefault();});
+  $('.photos-like-container')
+    .mouseenter(function(){
+      $(this).children('.photos-like-buttons').transition({'top':'0px'});
+    })
+    .mouseleave(function(){
+      $(this).children('.photos-like-buttons').transition({'top':'140px'});
+    })
+    .mousedown(function(event){
+      event.preventDefault();}
+    );
   $('.photos-thumbnail-container')
     .mouseenter(function(){
       $(this).addClass('clickable-hover');

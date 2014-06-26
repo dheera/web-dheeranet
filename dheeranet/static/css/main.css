@@ -370,6 +370,8 @@ h3 {
 }
 
 .photos-like {
+  position:absolute;
+  top:0px;
   width:110px;
   height:110px;
   background:#f0f0f0;
@@ -381,19 +383,15 @@ h3 {
 
 .photos-like-buttons {
   position:absolute;
-  width:110px;
-  height:110px;
+  top:140px;
   z-index:1;
+  width:140px;
+  height:140px;
   background:#f0f0f0;
   line-height:0em;
   text-align:center;
-  opacity:0;
-  -webkit-transition:opacity .5s ease;
-  -moz-transition:opacity .5s ease;
-  -o-transition:opacity .5s ease;
-  -ms-transition:opacity .5s ease;
-  transition:opacity .5s ease;
 }
+
 .photos-like-buttons img {
   width:40px;
   height:40px;
@@ -408,7 +406,10 @@ h3 {
   position:relative;
   margin-right:20px;
   margin-bottom:20px;
+  width:140px;
+  height:140px;
   overflow:hidden;
+  background:#f0f0f0;
 }
 
 .photos-like-container {
@@ -416,6 +417,8 @@ h3 {
   position:relative;
   margin-right:20px;
   margin-bottom:20px;
+  width:140px;
+  height:140px;
   overflow:hidden;
 }
 
