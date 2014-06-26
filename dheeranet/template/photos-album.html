@@ -20,7 +20,7 @@
 
   <div class="photos-thumbnail-set noselect">
     {% set i = 0 %}
-    {% set like_target_i = randrange(6,18) %}
+    {% set like_target_i = album_info['title'].__len__() % 12 + 6 %}
     {% for image in album_images %}
       {% set i = i + 1 %}
       {% if i==like_target_i %}
