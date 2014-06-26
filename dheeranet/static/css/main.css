@@ -44,6 +44,7 @@ html {
 }
 
 body {
+  overflow-x:hidden;
   margin:0;
   font-family: mainfont, Droid Sans, JhengHei, SimHei, Trebuchet MS, Verdana, Arial, Helvetica, sans-serif;
   font-size:18px;
