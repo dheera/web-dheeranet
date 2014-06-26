@@ -147,20 +147,26 @@ def album_get_info(album):
   info_json = s3_get_cached(PHOTOS_BUCKET,
                 PHOTOS_PREFIX + album + '/__info__',
                 timeout = 86400)
-  if info_json:
-    try:
-      info = json.loads(info_json)
-      info['album'] = album
-      if 'date' not in info:
-        if album[album.find('/')+1:][0:8].isdigit():
-          info['date'] = album[album.rfind('/')+1:][0:8]
-        else:
-          info['date'] = None
-      return info
-    except ValueError, e:
-      print "error: invalid json: %s" % info_json
-      return None
-  else:
+
+  if not info_json:
+    return None
+
+  try:
+    info = json.loads(info_json)
+    info['album'] = album
+    if 'date' not in info:
+      if album[album.find('/')+1:][0:8].isdigit():
+        info['date'] = album[album.rfind('/')+1:][0:8]
+      else:
+        info['date'] = None
+    if 'cover' not in info:
+      info['cover'] = album_list_filenames(album)[0]
+    if 'title' not in info:
+      info['title'] = album
+    return info
+
+  except ValueError, e:
+    print "error: invalid json: %s" % info_json
     return None
 
 def album_list_filenames(album, pic_format = PHOTOS_FORMAT_ORIGINAL, force_recache = False):
