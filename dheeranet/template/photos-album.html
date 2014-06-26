@@ -10,7 +10,7 @@
     {% for image in album_images %}
       {% set i = i + 1 %}
       {% if i==like_target_i %}
-        <div class="photos-like-container">\
+        <div class="photos-like-container">
           <div class="photos-like-buttons">
             <a class="clickable" style="top:25px;left:25px;position:absolute;" href="http://www.facebook.com/sharer.php?u=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/facebook.png"></a>
             <a class="clickable" style="top:25px;left:70px;position:absolute;" href="http://v.t.sina.com.cn/share/share.php?title={{ title|lang|urlencode }}&amp;ralateUid=1935328294&amp;url=http://dheerae.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/weibo.png"></a>
