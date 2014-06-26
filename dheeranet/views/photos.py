@@ -121,7 +121,7 @@ def get_home_sections():
     section['title'] = index_section['title']
 
     if 'albums' in index_section:
-      albums = map(lambda s: index_section['path'] + '/' + s.strip('/'), index_section['albums'])
+      albums = index_section['albums']
 
     else:
       albums = list_albums(index_section['path'])
