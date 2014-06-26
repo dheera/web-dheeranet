@@ -1,1 +1,67 @@
-{% extends "base.html" %}
+{% extends "page.html" %}
+
+{% block content %}
+{% filter lang %}
+
+  {% for section in sections %}
+
+    <h2>{{ section['title'] }}</h2>
+
+    {% for album in section['albums'][0:8] %}
+
+      <div class="photos-album noselect" onclick="window.location.href='/photos/{{ album['album'] }}}';">
+
+        {% if 'description_short' in album %}
+          <div class="photos-album-description">
+            {{ album['description_short'] }}
+          </div>
+        {% elif 'description' in album %}
+          <div class="photos-album-description">
+            {{ album['description'] }}
+          </div>
+        {% endif %}
+
+        <div class="photos-album-cover">
+          <a href="/photos/{{ album['album'] }}">
+            <img src="{{ album['thumb2_url'] }}">
+          </a>
+        </div>
+
+        <div class="photos-album-title">
+          {% if album['date'] %}
+            <div class="photos-album-date">
+              {{ album['date'] }}
+            </div>
+          {% endif %}
+          {{ album['title'] }}
+        </div>
+
+      </div> 
+    {% endfor %}
+
+    {% if section['albums'].__len__()>8 %}
+      <div class="photos-album-more-button clickable" onclick="$(this).next().slideDown();$(this).slideUp();">{|en:More...|zh:更多相冊。。。|}</div>
+      <div class="photos-album-more">
+        {% for album in section['albums'][8:] %}
+          <div class="photos-album-small noselect" onclick="window.location.href='/photos/{{ album['album'] }}';">
+            <div class="photos-album-small-cover">
+              {% if 'cover' in album %}
+                <a href="/photos/{{ album['album'] }}"><img src="{{ album['thumb_url'] }}"></a>
+              {% endif %}
+            </div>
+            <div class="photos-album-small-title">
+              {% if album['date'] %}
+                <span class="photos-album-date">{{ album['date'] }}</span><br>
+                {{ album['title'] }}
+              {% endif %}
+            </div>
+          </div> 
+        {% endfor %}
+      </div>
+    {% endif %}
+
+
+  {% endfor %}
+
+{% endfilter %}
+{% endblock %}

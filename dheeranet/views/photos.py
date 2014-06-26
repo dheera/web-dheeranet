@@ -36,11 +36,10 @@ photos = Blueprint('photos', __name__,template_folder='../template')
 
 @photos.route('/')
 def show():
-  content = generate_photos_home()
 
-  return render_template('page.html',
+  return render_template('photos.html',
     title = u'{|en:photos|zh:相冊|}',
-    content = content
+    sections = get_home_sections()
   )
 
 
@@ -111,17 +110,19 @@ def list_albums(path, force_recache = False):
   return [album for album in albums if album_get_info(album)]
 
 @cached()
-def generate_photos_home():
-  content = ''
+def get_home_sections():
   index = json.loads(s3_get_cached(PHOTOS_BUCKET,
                   PHOTOS_PREFIX + '__featured__',
                   timeout = 1200))
+  sections = []
 
   for index_section in index:
-    content += u'<h2>{}</h2>'.format(index_section['title'])
+    section = {}
+    section['title'] = index_section['title']
 
     if 'albums' in index_section:
       albums = map(lambda s: index_section['path'] + '/' + s.strip('/'), index_section['albums'])
+
     else:
       albums = list_albums(index_section['path'])
       if index_section['sort']:
@@ -129,57 +130,18 @@ def generate_photos_home():
 
     album_infos = filter(lambda x:x!=None, map(album_get_info, albums))
 
-    for album_info in album_infos[0:8]:
-      content += u'<div class="photos-album noselect" onclick="window.location.href=\'/photos/{}\';">'.format(album_info['album'])
-      content += u'<div class="photos-album-description">'
-      if 'description_short' in album_info:
-        content += album_info['description_short']
-      elif 'description' in album_info:
-        content += album_info['description']
-      content += u'</div>'
-      content += u'<div class="photos-album-cover">'
-      if 'cover' in album_info:
-        content += u'<a href="/photos/{}">'.format(album_info['album'])
-        content += u'<img src="{}">'.format(
-          album_get_url(album_info['album'], album_info['cover'], PHOTOS_FORMAT_THUMB2))
-      content += u'</a>'
-      content += u'</div>'
-      content += u'<div class="photos-album-title">'
-      if album_info['date']:
-        content += u'<span class="photos-album-date">{{|en:{Y}.{m}.{d}|zh:{Y}年{m}月-{d}日|}}</span><br>'.format(
-          Y = album_info['date'][0:4],
-          m = album_info['date'][4:6],
-          d = album_info['date'][6:8],
-        )
-      content += album_info['title']
-      content += u'</div>'
-      content += u'</div> '
+    album_infos = map(
+      lambda album_info:
+        album_info.update({
+          'thumb_url': album_get_url(album_info['album'], album_info['cover'], pic_format = PHOTOS_FORMAT_THUMB),
+          'thumb2_url': album_get_url(album_info['album'], album_info['cover'], pic_format = PHOTOS_FORMAT_THUMB2),
+        }) or album_info,
+        album_infos
+    )
+    section['albums'] = album_infos
+    sections.append(section)
 
-    if len(album_infos)>8:
-      content += u'<div class="photos-album-more-button clickable" onclick="$(this).next().slideDown();$(this).slideUp();">{|en:More...|zh:更多相冊。。。|}</div>'
-      content += u'<div class="photos-album-more">'
-      for album_info in album_infos[8:]:
-        content += u'<div class="photos-album-small noselect" onclick="window.location.href=\'/photos/{}\';">'.format(album_info['album'])
-        content += u'<div class="photos-album-small-cover">'
-        if 'cover' in album_info:
-          content += u'<a href="/photos/{}">'.format(album_info['album'])
-          content += u'<img src="{}">'.format(
-            album_get_url(album_info['album'], album_info['cover'], PHOTOS_FORMAT_THUMB))
-        content += u'</a>'
-        content += u'</div>'
-        content += u'<div class="photos-album-small-title">'
-        if album_info['date']:
-          content += u'<span class="photos-album-date">{{|en:{Y}.{m}.{d}|zh:{Y}年{m}月-{d}日|}}</span><br>'.format(
-            Y = album_info['date'][0:4],
-            m = album_info['date'][4:6],
-            d = album_info['date'][6:8],
-          )
-        content += album_info['title']
-        content += u'</div>'
-        content += u'</div> '
-      content += u'</div>'
-
-  return content
+  return sections
 
 def album_get_info(album):
   info_json = s3_get_cached(PHOTOS_BUCKET,
