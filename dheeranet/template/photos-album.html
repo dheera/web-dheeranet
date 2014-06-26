@@ -4,6 +4,10 @@
 {% block content %}
 {% filter lang %}
 
+{% if 'description' in album_info %}
+{{ album_info['description'] }}<br><br>
+{% endif %}
+
   <div class="photos-thumbnail-set noselect">
     {% set i = 0 %}
     {% set like_target_i = randrange(6,12) %}
