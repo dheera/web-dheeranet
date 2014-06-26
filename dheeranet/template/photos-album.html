@@ -3,9 +3,11 @@
 
 {% block meta %}
 <meta property="og:title" content="{{ album_info['title']|lang }} | dheera.net">
-{% if 'description' in album_info %}
+<meta property="og:image" content="{{ album_images[0]['thumb_url'] }}">
+{% if 'description_short' in album_info %}
+  <meta property="og:description_short" content="{{ album_info['description_short']|lang }}">
+{% elif 'description' in album_info %}
   <meta property="og:description" content="{{ album_info['description']|lang }}">
-  <meta property="og:image" content="{{ album_images[0]['thumb_url'] }}">
 {% endif %}
 {% endblock %}
 
