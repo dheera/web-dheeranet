@@ -669,14 +669,14 @@ border:0;
     padding-bottom:2px;
     margin-top:0px;
     margin-bottom:0px;
-    border-bottom:1px solid #d8d8d8;
+    border-bottom:1px solid #e0e0e0;
   }
   .photos-album-small {
     display:block;
     margin-left:-20px;
     margin-right:-20px;
     margin-bottom:0px;
-    border-bottom:1px solid #d8d8d8;
+    border-bottom:1px solid #e0e0e0;
     width:auto;
   }
   .photos-album-small-title {
