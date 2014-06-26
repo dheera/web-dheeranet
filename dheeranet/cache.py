@@ -11,7 +11,7 @@ class cached(object):
     self.timeout = timeout or CACHE_TIMEOUT
   def __call__(self, f):
     def decorator(*args, **kwargs):
-      key = 'python_' + marshal.dumps((id(f), args, kwargs)).encode('hex')
+      key = 'python_' + hashlib.sha1(marshal.dumps((id(f), args, kwargs))).hexdigest()
       response = cache.get(key)
       if response is None:
         response = f(*args, **kwargs)
@@ -20,7 +20,7 @@ class cached(object):
     return decorator
 
 def s3_list_cached(s3_bucket, s3_prefix, s3_delimiter, timeout=None, force_recache=False):
-  cache_key = 's3_' + marshal.dumps(('list', s3_bucket.name, s3_prefix, s3_delimiter)).encode('hex')
+  cache_key = 's3_' + hashlib.sha1(marshal.dumps(('list', s3_bucket.name, s3_prefix, s3_delimiter))).hexdigest()
   response = cache.get(cache_key)
   if force_recache or not response:
     response = s3_bucket.list(s3_prefix, s3_delimiter)
@@ -30,7 +30,7 @@ def s3_list_cached(s3_bucket, s3_prefix, s3_delimiter, timeout=None, force_recac
   return response
 
 def s3_get_cached(s3_bucket, s3_key_name, timeout=None, force_recache=False):
-  cache_key = 's3_' + marshal.dumps(('get', s3_bucket.name, s3_key_name)).encode('hex')
+  cache_key = 's3_' + hashlib.sha1(marshal.dumps(('get', s3_bucket.name, s3_key_name))).hexdigest()
   response = cache.get(cache_key)
   if force_recache or not response:
     s3_key = s3_bucket.get_key(s3_key_name)
