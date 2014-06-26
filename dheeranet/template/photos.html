@@ -5,11 +5,10 @@
 
   {% for section in sections %}
 
-    <h2>{{ section['title'] }}</h2>
+    <div class="photos-section"><h2>{{ section['title'] }}</h2></div>
 
     {% for album in section['albums'][0:8] %}
-
-      <div class="photos-album noselect" onclick="window.location.href='/photos/{{ album['album'] }}';">
+      <div class="desktop-only photos-album noselect" onclick="window.location.href='/photos/{{ album['album'] }}';">
 
         {% if 'description_short' in album %}
           <div class="photos-album-description">
@@ -36,7 +35,22 @@
           {{ album['title'] }}
         </div>
 
-      </div> 
+      </div>
+      <div class="mobile-only">
+        <div class="photos-album-small noselect" onclick="window.location.href='/photos/{{ album['album'] }}';">
+          <div class="photos-album-small-cover">
+            {% if 'cover' in album %}
+              <a href="/photos/{{ album['album'] }}"><img src="{{ album['thumb_url'] }}"></a>
+            {% endif %}
+          </div>
+          <div class="photos-album-small-title">
+            {% if album['date'] %}
+              <span class="photos-album-date">{{ album['date'] }}</span><br>
+            {% endif %}
+            {{ album['title'] }}
+          </div>
+        </div>
+      </div>
     {% endfor %}
 
     {% if section['albums'].__len__()>8 %}

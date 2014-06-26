@@ -40,6 +40,7 @@
 
 html {
   -webkit-text-size-adjust: none;
+  overflow-x:hidden;
 }
 
 body {
@@ -657,32 +658,37 @@ border:0;
     padding:0;
     width:100%;
   }
-  .photos-album {
-    width:100%;
-    height:80px;
-    display:table;
+  .photos-section {
+    background:#f0f0f0;
+    margin-left:-20px;
+    margin-right:-20px;
+    width:auto;
+    padding-left:20px;
+    padding-right:20px;
+    padding-top:2px;
+    padding-bottom:2px;
+    margin-top:0px;
+    margin-bottom:0px;
+    border-bottom:1px solid #d8d8d8;
   }
-  .photos-album-date {
+  .photos-album-small {
+    display:block;
+    margin-left:-20px;
+    margin-right:-20px;
+    margin-bottom:0px;
+    border-bottom:1px solid #d8d8d8;
+    width:auto;
   }
-  .photos-album-title {
-    display:table-cell;
-    vertical-align:middle;
-    padding-top:0px;
-    padding-bottom:0px;
-    width:auto;height:80px;
-    padding-left:15px;
+  .photos-album-small-title {
+    width:auto;
+    font-weight:normal;
+    font-size:18px;
   }
-  .photos-album-cover {
-    width:80px;
-    height:80px;
-    display:table-cell;
-  }
-  .photos-album-cover img {
-    width:80px;
-    height:80px;
-  }
-  .photos-album-description {
-    display:none;
+  .photos-album-more-button {
+    margin-left:-20px;
+    margin-right:-20px;
+    margin-bottom:0px;
+    width:auto;
   }
   .home_top_box_headline {
     font-size:32px;
