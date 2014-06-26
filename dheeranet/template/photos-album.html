@@ -1,5 +1,13 @@
 {% extends "page.html" %}
-{% set title = album_info['title'] %}
+{% set title = album_info['title']|lang %}
+
+{% block meta %}
+<meta property="og:title" content="{{ album_info['title']|lang }} | dheera.net">
+{% if 'description' in album_info %}
+  <meta property="og:description" content="{{ album_info['description']|lang }}">
+  <meta property="og:image" content="{{ album_images[0]['thumb_url'] }}">
+{% endif %}
+{% endblock %}
 
 {% block content %}
 {% filter lang %}
