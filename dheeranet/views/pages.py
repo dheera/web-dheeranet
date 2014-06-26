@@ -29,11 +29,15 @@ def show(path):
     if 'subtitle' not in params:
       params['subtitle'] = ''
 
+    if 'like_buttons' not in params:
+      params['like_buttons'] = True
+
     return render_template(
       'page.html',
       title=params['title'],
       subtitle=params['subtitle'],
       content=content,
+      like_buttons=params['like_buttons'],
       subnavbar=subnavbar
     )
 

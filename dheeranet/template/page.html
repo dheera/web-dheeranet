@@ -30,5 +30,15 @@
     {{ content|lang|safe }}
     {% endblock %}
   </div>
+  {% if not like_buttons is defined %}{% set like_buttons = True %}{% endif %}
+  {% if like_buttons == True %}
+    <div class="like-buttons">
+      Like this page? <b>Share it!</b>
+      <a onclick="window.open(this.href,'sharer','width=720,height=480,toolbar=0,status=0')" class="clickable" href="http://www.facebook.com/sharer.php?u=http://dheera.net{{ request.path }}%3Fn=1" target="_new"><img src="http://static.dheera.net/icons/facebook.png"></a>
+      <a onclick="window.open(this.href,'sharer','width=720,height=480,toolbar=0,status=0')" class="clickable" href="http://v.t.sina.com.cn/share/share.php?title={{ title|lang|urlencode }}&amp;ralateUid=1935328294&amp;url=http://dheerae.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/weibo.png"></a>
+      <a onclick="window.open(this.href,'sharer','width=520,height=600,scrollbars=0,toolbar=0,status=0')" class="clickable" href="https://plus.google.com/share?url=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/gplus.png"></a>
+      <a onclick="window.open(this.href,'sharer','width=720,height=320,toolbar=0,status=0')" class="clickable" href="http://twitter.com/share?text={{ title|lang|urlencode }}&amp;url=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/twitter.png"></a>
+    </div>
+  {% endif %}
 </div>
 {% endblock %}

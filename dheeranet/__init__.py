@@ -118,7 +118,6 @@ def after_request(response):
 
   if 'lang' in request.args:
     response.set_cookie('lang', request.args['lang'])
-  print response.headers
   return response
 
 if __name__ == '__main__':
