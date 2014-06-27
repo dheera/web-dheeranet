@@ -79,6 +79,8 @@ app.jinja_env.globals.update(randrange=randrange)
 app.jinja_env.globals.update(request=request)
 app.jinja_env.globals.update(enumerate=enumerate)
 app.jinja_env.globals.update(len=len)
+app.jinja_env.globals.update(min=min)
+app.jinja_env.globals.update(max=max)
 
 from views.home import home
 app.register_blueprint(home)
