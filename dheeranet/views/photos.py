@@ -98,6 +98,7 @@ def show_album(album):
   return render_template('photos-album.html',
     album_info = album_info,
     album_images = album_images,
+    like_buttons = False
   )
 
 def list_albums(path, force_recache = False):
