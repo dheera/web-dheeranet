@@ -1,5 +1,6 @@
 {% extends "page.html" %}
 {% set title = album_info['title']|lang %}
+{% set subnavbar = [('http://dheera.net/photos/','back','{|en:more albums|zh:相冊目錄|}')] %}
 
 {% block meta %}
 <meta property="og:title" content="{{ album_info['title']|lang }} | dheera.net">
