@@ -45,7 +45,9 @@
           </div>
           <div class="photos-album-small-title">
             {% if album['date'] %}
-              {|en:{{ album['date'][6:8] }}.{{ album['date'][4:6] }}.{{ album['date'][0:4] }}|zh:{{ album['date'][0:4] }}年{{ album['date'][4:6] }}月{{ album['date'][6:8] }}日|}
+              <div class="photos-album-date">
+                {|en:{{ album['date'][6:8] }}.{{ album['date'][4:6] }}.{{ album['date'][0:4] }}|zh:{{ album['date'][0:4] }}年{{ album['date'][4:6] }}月{{ album['date'][6:8] }}日|}
+              </div>
             {% endif %}
             {{ album['title'] }}
           </div>
