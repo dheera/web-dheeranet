@@ -111,8 +111,8 @@ body {
 .like-buttons img {
   margin-left:20px;
   vertical-align:middle;
-  width:20px;
-  height:20px;
+  width:32px;
+  height:32px;
 }
 
 a, a:link, a:visited {
@@ -648,15 +648,33 @@ border:0;
     display:block;
   }
   .photos-thumbnail-set {
-    margin-right:-15px;
+    margin-left:-20px;
+    margin-right:-20px;
+    width:auto;
+    display:table;
+    line-height:0;
+    border-top:4px solid #000000;
+    background:#000000;
   }
   .photos-thumbnail-mobile {
-    display:inline-block;
-    width:30%;
+    width:-moz-calc(33.3333% - 4px);
+    width:-o-calc(33.3333% - 4px);
+    width:-webkit-calc(33.3333% - 4px);
+    width:calc(33.3333% - 4px);
+    margin:0;
+    padding:0;
+    line-height:0;
     height:auto;
+    border-right:4px solid #000000;
+    border-bottom:4px solid #000000;
+  }
+  .photos-thumbnail-mobile:nth-child(3n+1) {
+    clear:left;
   }
   .photos-thumbnail-mobile img {
     padding:0;
+    margin:0;
+    line-height:0;
     width:100%;
   }
   .photos-section {
