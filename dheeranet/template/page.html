@@ -1,5 +1,13 @@
 {% extends "base.html" %}
-{% block title %}{{ title|lang }}{% endblock %}
+
+{% block title %}
+{% if subtitle %}
+  {{ subtitle|lang }} | {{ title|lang }}
+{% else %}
+  {{ title|lang }}
+{% endif %}
+{% endblock %}
+
 {% block main %}
 <div class="content_page">
   <div style="padding-bottom:35px;">
