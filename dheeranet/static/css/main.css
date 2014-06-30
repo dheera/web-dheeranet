@@ -54,7 +54,7 @@ body {
 .ui-cover {
   position:absolute;
   z-index:10000;
-  background:url(/static/images/blank.gif);
+  background:url(http://static.dheera.net/images/blank.gif);
   -moz-user-select:none;
   -webkit-user-select:none;
 }
