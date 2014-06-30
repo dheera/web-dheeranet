@@ -90,14 +90,6 @@ body {
   z-index:1000;
 }
 
-.ui-cover {
-  position:absolute;
-  z-index:10000;
-  background:url(/static/images/blank.gif);
-  -moz-user-select:none;
-  -webkit-user-select:none;
-}
-
 .like-buttons {
   line-height:0em;
   text-align:center;
@@ -740,6 +732,4 @@ border:0;
     margin-bottom:20px;
   }
 }
-20px;
-  }
-}
+                                              
