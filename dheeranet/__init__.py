@@ -30,19 +30,16 @@ def request_hostname():
 
 # parse host filters
 def host_filter(code):
-  # function to parse one clause, e.g. {$CN|youku_url|youtube_url$}
+  # function to parse one clause, e.g. {$CN?youku_url|youtube_url$}
   host_tags = []
-  print request.remote_addr
-  print(geoip.country_code_by_addr(request.remote_addr).lower())
-  
   host_tags.append(geoip.country_code_by_addr(request.remote_addr).lower())
-  print host_tags
+
   def repl_func(subcode):
     subcode_string = subcode.group(0).strip('{$}');
-    subcode_search = re.search('(.*)\|(.*)\|(.*)', subcode_string)
+    subcode_search = re.search('(.*)\?(.*)\|(.*)', subcode_string, flags=re.S)
 
     if not subcode_search:
-      return subcode
+      return subcode.group(0)
 
     if subcode_search.lastindex == 3:
       if subcode_search.group(1).lower() in host_tags:
@@ -50,9 +47,9 @@ def host_filter(code):
       else:
         return subcode_search.group(3)
     else:
-      return subcode
+      return subcode.group(0)
 
-  return re.sub('\{\$.*?\$\}',repl_func,code,flags=re.S)
+  return re.sub('\{\$.*?\$\}', repl_func,code, flags=re.S)
 
 # parse multilingual HTML
 def lang_filter(code):
