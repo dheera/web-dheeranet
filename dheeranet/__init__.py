@@ -8,9 +8,11 @@ from cache import cached, s3_get_cached
 import re
 import socket
 from random import randrange
+import pygeoip
+
+geoip = pygeoip.GeoIP('/usr/local/share/geoip/GeoIP.dat', pygeoip.MEMORY_CACHE)
 
 s3 = S3Connection(open('.aws_id').read().strip(),open('.aws_secret').read().strip())
-
 static_bucket = s3.get_bucket('static.dheera.net')
 
 @cached()
@@ -26,8 +28,34 @@ def revdns(ip):
 def request_hostname():
   return revdns(request.remote_addr)
 
+# parse host filters
+def host_filter(code):
+  # function to parse one clause, e.g. {$CN|youku_url|youtube_url$}
+  host_tags = []
+  print request.remote_addr
+  print(geoip.country_code_by_addr(request.remote_addr).lower())
+  
+  host_tags.append(geoip.country_code_by_addr(request.remote_addr).lower())
+  print host_tags
+  def repl_func(subcode):
+    subcode_string = subcode.group(0).strip('{$}');
+    subcode_search = re.search('(.*)\|(.*)\|(.*)', subcode_string)
+
+    if not subcode_search:
+      return subcode
+
+    if subcode_search.lastindex == 3:
+      if subcode_search.group(1).lower() in host_tags:
+        return subcode_search.group(2)
+      else:
+        return subcode_search.group(3)
+    else:
+      return subcode
+
+  return re.sub('\{\$.*?\$\}',repl_func,code,flags=re.S)
+
 # parse multilingual HTML
-def lang(code):
+def lang_filter(code):
   # function to parse one string unit {|en:apple|zh:蘋果|}
   def repl_func(subcode):
     if 'HTTP_ACCEPT_LANGUAGE' in request.environ:
@@ -73,7 +101,8 @@ def lang(code):
 
 app = Flask(__name__)
 app.jinja_options['extensions'].append('jinja2htmlcompress.HTMLCompress')
-app.jinja_env.filters['lang'] = lang
+app.jinja_env.filters['lang'] = lang_filter
+app.jinja_env.filters['host'] = host_filter
 app.jinja_env.globals.update(request_hostname=request_hostname)
 app.jinja_env.globals.update(randrange=randrange)
 app.jinja_env.globals.update(request=request)

@@ -35,7 +35,7 @@
   </div>
   <div>
     {% block content %}
-    {{ content|lang|safe }}
+    {{ content|lang|host|safe }}
     {% endblock %}
   </div>
   {% if not like_buttons is defined %}{% set like_buttons = True %}{% endif %}
