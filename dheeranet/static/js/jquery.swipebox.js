@@ -254,7 +254,7 @@
 					$this.setTimeout();
 
 					$('body').bind('touchstart', function(e){
-
+						e.preventDefault();
 						$(this).addClass('touching');
 
 		  				endCoords = e.originalEvent.targetTouches[0];
