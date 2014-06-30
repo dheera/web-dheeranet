@@ -36,16 +36,22 @@ def host_filter(code):
 
   def repl_func(subcode):
     subcode_string = subcode.group(0).strip('{$}');
-    subcode_search = re.search('(.*)\?(.*)\|(.*)', subcode_string, flags=re.S)
+    subcode_search = re.search('(.*?)\?(.*)', subcode_string, flags=re.S)
 
     if not subcode_search:
       return subcode.group(0)
 
-    if subcode_search.lastindex == 3:
-      if subcode_search.group(1).lower() in host_tags:
-        return subcode_search.group(2)
+    if subcode_search.lastindex == 2:
+      if subcode_search.group(1)[0] == '!':
+        if subcode_search.group(1).lower()[1:] in host_tags:
+          return ''
+        else:
+          return subcode_search.group(2)
       else:
-        return subcode_search.group(3)
+        if subcode_search.group(1).lower() in host_tags:
+          return subcode_search.group(2)
+        else:
+          return ''
     else:
       return subcode.group(0)
 
