@@ -6,6 +6,7 @@ from jinja2 import Markup
 from boto.s3.connection import S3Connection
 from cache import cached, s3_get_cached
 import re
+import json
 import socket
 from random import randrange
 import pygeoip
@@ -28,11 +29,18 @@ def revdns(ip):
 def request_hostname():
   return revdns(request.remote_addr)
 
-# parse host filters
+# parses for host-based filters: {$cn?youku_url}{$!cn?youtube_url$}
 def host_filter(code):
-  # function to parse one clause, e.g. {$CN?youku_url|youtube_url$}
   host_tags = []
   host_tags.append(geoip.country_code_by_addr(request.remote_addr).lower())
+  host_tags_info = json.loads(s3_get_cached(static_bucket, '__hosts__'))
+
+  hostname = request_hostname()
+
+  for tag, match_str_list in host_tags_info.items():
+    for match_str in match_str_list:
+      if match_str in hostname:
+        host_tags.append(tag)
 
   def repl_func(subcode):
     subcode_string = subcode.group(0).strip('{$}');
@@ -57,9 +65,8 @@ def host_filter(code):
 
   return re.sub('\{\$.*?\$\}', repl_func,code, flags=re.S)
 
-# parse multilingual HTML
+# parses for multi-lingual strings: {|en:apple|zh:蘋果|}
 def lang_filter(code):
-  # function to parse one string unit {|en:apple|zh:蘋果|}
   def repl_func(subcode):
     if 'HTTP_ACCEPT_LANGUAGE' in request.environ:
       accept_languages = request.environ['HTTP_ACCEPT_LANGUAGE']
