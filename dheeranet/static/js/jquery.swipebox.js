@@ -255,6 +255,7 @@
 
 					$('body').bind('touchstart', function(e){
 						e.preventDefault();
+						e.stopPropagation();
 						$(this).addClass('touching');
 
 		  				endCoords = e.originalEvent.targetTouches[0];
