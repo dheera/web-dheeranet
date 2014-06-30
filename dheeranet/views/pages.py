@@ -11,6 +11,10 @@ pages = Blueprint('pages', __name__,template_folder='../template')
 def show(path):
   try:
 
+    # redirect for old php-based website whose URLs are still being linked to
+    if path.endswith('.php'):
+      return redirect('http://dheera.net/' + path[:-4])
+
     page = get_page(path)
     if not page:
       abort(404)
