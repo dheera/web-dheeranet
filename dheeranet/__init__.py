@@ -24,7 +24,7 @@ def revdns(ip):
     response = socket.gethostbyaddr(ip)
     return response[0]
   except Exception:
-    return None
+    return ''
 
 def request_hostname():
   return revdns(request.remote_addr)
