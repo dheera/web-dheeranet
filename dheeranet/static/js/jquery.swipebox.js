@@ -82,6 +82,10 @@
 						if( $(this).attr('href') )
 							href = $(this).attr('href');
 
+						if($(window).width()*window.devicePixelRatio>1280 && $(this).data('large')) {
+							href = $(this).data('large');
+  }
+
 						if( $(this).data('dl') )
 							dl = $(this).data('dl');
 
@@ -538,7 +542,7 @@
  } else {
 					$this.loadMedia(src, function(){
 						$('#swipebox-slider .slide').eq(index).html(this);
-	//				 	if(elements[index].dl) { $('#swipebox-slider .slide').eq(index).append('<div style="color:white;"><a style="text-decoration:none;color:white;font-size:9px;" href="/photos-download?q='+src.substr(src.indexOf('photos/')+7)+'">download full-resolution image</a></div>'); }
+					 	//if(elements[index].dl) { $('#swipebox-slider .slide').eq(index).append('<div style="color:white;"><a style="text-decoration:none;color:white;font-size:9px;" href="/photos-download?q='+src.substr(src.indexOf('photos/')+7)+'">download full-resolution image</a></div>'); }
 					});
  }
 				}else{

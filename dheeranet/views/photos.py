@@ -88,7 +88,8 @@ def show_album(album):
        'album': album,
        'id': filename.replace('.jpg',''),
        'filename': filename,
-       'display_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL),
+       'small_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_SMALL),
+       'large_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_LARGE),
        'thumb_url': album_get_url(album, filename, pic_format = PHOTOS_FORMAT_THUMB),
        'download_url': '/photos/download/{}/{}'.format(album, filename)
       },

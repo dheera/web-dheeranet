@@ -25,9 +25,9 @@
 
       <div class="photos-thumbnail-container">
         <div class="photos-thumbnail-download"><a target="_new" title="{|en:Download original size|zh:下載原始大小|}" href="{{ image['download_url'] }}"><img alt="Download" src="http://static.dheera.net/images/photos-download-button.png"></a></div>
-        <a id="{{ image['id'] }}" class="photos-thumbnail" data-dl="{{ image['download_url'] }}" rel="gallery" href="{{ image['display_url'] }}"><img alt="{{ image['id'] }}" src="{{ image['thumb_url'] }}" style="width:140px;height:140px;"></a>
+        <a id="{{ image['id'] }}" class="photos-thumbnail" data-large="{{ image['large_url'] }}" data-dl="{{ image['download_url'] }}" rel="gallery" href="{{ image['small_url'] }}"><img alt="{{ image['id'] }}" src="{{ image['thumb_url'] }}" style="width:140px;height:140px;"></a>
       </div>
-      <a class="photos-thumbnail-mobile" rel="gallery-mobile" href="{{ image['display_url'] }}"><img alt="{{ image['id'] }}" src="{{ image['thumb_url'] }}"></a>
+      <a class="photos-thumbnail-mobile" rel="gallery-mobile" data-large="{{ image['large_url'] }}" href="{{ image['small_url'] }}"><img alt="{{ image['id'] }}" src="{{ image['thumb_url'] }}"></a>
 
       {% if i==i_like %}
         <div class="photos-like-container">
@@ -36,7 +36,7 @@
           </div>
           <div class="photos-like-buttons">
             <a onclick="window.open(this.href,'sharer','width=720,height=480,toolbar=0,status=0')" class="clickable" style="top:25px;left:25px;position:absolute;" href="http://www.facebook.com/sharer.php?u=http://dheera.net{{ request.path }}%3Fn=1" target="_new"><img src="http://static.dheera.net/icons/facebook.png"></a>
-            <a onclick="window.open(this.href,'sharer','width=720,height=480,toolbar=0,status=0')" class="clickable" style="top:25px;left:75px;position:absolute;" href="http://v.t.sina.com.cn/share/share.php?title={{ title|lang|urlencode }}&amp;ralateUid=1935328294&amp;url=http://dheera.net{{ request.path }}&amp;pic={{ album_images[0]['display_url']|urlencode }}%7C%7C{{ album_images[1]['display_url']|urlencode }}%7C%7C{{ album_images[2]['display_url']|urlencode }}%7C%7C{{ album_images[3]['display_url']|urlencode }}" target="_new"><img src="http://static.dheera.net/icons/weibo.png"></a>
+            <a onclick="window.open(this.href,'sharer','width=720,height=480,toolbar=0,status=0')" class="clickable" style="top:25px;left:75px;position:absolute;" href="http://v.t.sina.com.cn/share/share.php?title={{ title|lang|urlencode }}&amp;ralateUid=1935328294&amp;url=http://dheera.net{{ request.path }}&amp;pic={{ album_images[0]['small_url']|urlencode }}%7C%7C{{ album_images[1]['small_url']|urlencode }}%7C%7C{{ album_images[2]['small_url']|urlencode }}%7C%7C{{ album_images[3]['small_url']|urlencode }}" target="_new"><img src="http://static.dheera.net/icons/weibo.png"></a>
             <a onclick="window.open(this.href,'sharer','width=520,height=600,scrollbars=0,toolbar=0,status=0')" class="clickable" style="top:75px;left:25px;position:absolute;" href="https://plus.google.com/share?url=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/gplus.png"></a>
             <a onclick="window.open(this.href,'sharer','width=720,height=320,toolbar=0,status=0')" class="clickable" style="top:75px;left:75px;position:absolute;" href="http://twitter.com/share?text={{ title|lang|urlencode }}&amp;url=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/twitter.png"></a>
           </div>
