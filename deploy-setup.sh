@@ -14,3 +14,6 @@ sudo gunzip /tmp/GeoIP.dat.gz
 sudo mkdir /usr/local/share/geoip
 sudo mv /tmp/GeoIP.dat /usr/local/share/geoip/
 
+# search for and rebuild any lost objects
+# (low res versions stored as reduced redundancy)
+sudo ln -s /www/dheeranet/photos_gen_sizes.py /etc/cron.hourly
