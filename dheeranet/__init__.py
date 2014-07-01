@@ -7,13 +7,17 @@ from boto.s3.connection import S3Connection
 from cache import cached, s3_get_cached
 import re
 import json
+import os
 import socket
 from random import randrange
 import pygeoip
 
 geoip = pygeoip.GeoIP('/usr/local/share/geoip/GeoIP.dat', pygeoip.MEMORY_CACHE)
 
-s3 = S3Connection(open('.aws_id').read().strip(),open('.aws_secret').read().strip())
+s3 = S3Connection(
+  open(os.path.dirname(__file__) + '/../.aws_id').read().strip(),
+  open(os.path.dirname(__file__) + '/../.aws_secret').read().strip()
+)
 static_bucket = s3.get_bucket('static.dheera.net')
 
 @cached()
