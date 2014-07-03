@@ -404,7 +404,7 @@
 
 					if ( vSwipe ) {
 						vSwipe = false;
-						if ( slider.css( 'opacity' ) <= 0.5 && Math.abs(vDistance) > Math.abs(vDistanceLast)) {
+						if ( Math.abs( vDistance ) >= 2*vSwipMinDistance && Math.abs(vDistance) > Math.abs(vDistanceLast)) {
 							var vOffset = vDistance > 0 ? slider.height() : - slider.height();
 							slider.animate( { top: vOffset + 'px', 'opacity': 0 },
 								300,
