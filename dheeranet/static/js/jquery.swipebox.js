@@ -318,6 +318,9 @@
 
 					$( this ).addClass( 'touching' );
 
+					vSwipe = false;
+					hSwipe = false;
+
 					endCoords = event.originalEvent.targetTouches[0];
 					startCoords.pageX = event.originalEvent.targetTouches[0].pageX;
 					startCoords.pageY = event.originalEvent.targetTouches[0].pageY;
@@ -400,6 +403,7 @@
 
 
 					if ( vSwipe ) {
+						vSwipe = false;
 						if ( slider.css( 'opacity' ) <= 0.5 && Math.abs(vDistance) > Math.abs(vDistanceLast)) {
 							var vOffset = vDistance > 0 ? slider.height() : - slider.height();
 							slider.animate( { top: vOffset + 'px', 'opacity': 0 },
@@ -411,9 +415,9 @@
 							slider.animate( { top: 0, 'opacity': 1 }, 300 );
 						}
 
-						vSwipe = false;
 						return;
 					} else if ( hSwipe ) {
+						hSwipe = false;
 						if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast) {
 							// swipeLeft
 							$this.getPrev();
@@ -421,7 +425,6 @@
 							// swipeRight
 							$this.getNext();
 						}
-						hSwipe = false;
 					} else {
 						// tap
 						if ( ! bars.hasClass( 'visible-bars' ) ) {
