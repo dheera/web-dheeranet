@@ -415,7 +415,6 @@
 							slider.animate( { top: 0, 'opacity': 1 }, 300 );
 						}
 
-						return;
 					} else if ( hSwipe ) {
 						hSwipe = false;
 						if( hDistance >= hSwipMinDistance && hDistance >= hDistanceLast) {
