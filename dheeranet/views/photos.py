@@ -204,6 +204,11 @@ def album_get_photo(album, filename, local_filename, pic_format = PHOTOS_FORMAT_
   else:
     raise Exception("Nonexistent photo")
 
+def album_delete_photo(album, filename, pic_format):
+  if pic_format in (PHOTOS_FORMAT_LARGE, PHOTOS_FORMAT_SMALL, PHOTOS_FORMAT_THUMB, PHOTOS_FORMAT_THUMB2):
+    key = album_get_key(album, filename, pic_format = pic_format, create = True)
+    key.delete()
+
 def album_put_photo(album, filename, local_filename, pic_format):
 
   # re-generatable formats, can overwrite, use reduced redundancy storage

@@ -301,6 +301,34 @@ for album in albums:
         print('.... done')
         sys.stdout.flush()
 
+  for filename in filenames_small:
+    if not filename in filenames_original:
+      print('  removing orphaned small file ' + filename)
+      photos.album_delete_photo(album,
+        filename,
+        pic_format=photos.PHOTOS_FORMAT_SMALL)
+
+  for filename in filenames_large:
+    if not filename in filenames_original:
+      print('  removing orphaned large file ' + filename)
+      photos.album_delete_photo(album,
+        filename,
+        pic_format=photos.PHOTOS_FORMAT_LARGE)
+
+  for filename in filenames_thumb:
+    if not filename in filenames_original:
+      print('  removing orphaned thumb file ' + filename)
+      photos.album_delete_photo(album,
+        filename,
+        pic_format=photos.PHOTOS_FORMAT_THUMB)
+
+  for filename in filenames_thumb2:
+    if not filename in filenames_original:
+      print('  removing orphaned thumb2 file ' + filename)
+      photos.album_delete_photo(album,
+        filename,
+        pic_format=photos.PHOTOS_FORMAT_THUMB2)
+
   map(os.unlink, [os.path.join(tempdir, f) for f in os.listdir(tempdir)])
 
 shutil.rmtree(tempdir)
