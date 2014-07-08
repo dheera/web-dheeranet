@@ -41,6 +41,11 @@
 
   <div class="home_bottom_box">
     <h3 style="color:#808080;padding:0;margin-top:0;margin-bottom:20px;">{|en:News|zh:最新消息|}</h3>
+    {% for news_item in news_items %}
+      {|en:{{ news_item['date'][6:8] }}.{{ news_item['date'][4:6] }}.{{ news_item['date'][0:4] }}|zh:{{ news_item['date'][0:4] }}年{{ news_item['date'][4:6] }}月{{ news_item['date'][6:8] }}日|}<br>
+      <a href="{{ news_item['link'] }}">{{ news_item['title'] }}</a>
+      <br><br>
+    {% endfor %}
   </div>
   <div class="home_bottom_box">
     <h3 style="color:#808080;padding:0;margin-top:0;margin-bottom:20px;">{|en:Contact me|zh:聯絡方式|}</h3>
