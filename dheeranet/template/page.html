@@ -52,7 +52,7 @@
   {% endif %}
 
   {% if comments == True %}
-    {% filter host %}
+    {% filter host %}{% filter lang %}
 {$!cn?
 <br>
 <div id="fb-root"></div>
@@ -60,12 +60,12 @@
   var js, fjs = d.getElementsByTagName(s)[0];
   if (d.getElementById(id)) return;
   js = d.createElement(s); js.id = id;
-  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=731406776917435&version=v2.0";
+  js.src = "//connect.facebook.net/{|en:en_US|zh:zh_TW|}/sdk.js#xfbml=1&appId=731406776917435&version=v2.0";
   fjs.parentNode.insertBefore(js, fjs);
 }(document, 'script', 'facebook-jssdk'));</script>
 <div data-width="100%" class="fb-comments" data-href="http://dheera.net{{ request.path }}" data-numposts="5" data-colorscheme="light"></div>
 $}
-    {% endfilter %}
+    {% endfilter %}{% endfilter %}
   {% endif %}
 
 </div>
