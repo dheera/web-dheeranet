@@ -1,5 +1,8 @@
 {% extends "base.html" %}
 
+{% if not comments is defined %}{% set comments = False %}{% endif %}
+{% if not like_buttons is defined %}{% set like_buttons = True %}{% endif %}
+
 {% block title %}
 {% if subtitle %}
   {{ subtitle|lang }} | {{ title|lang }}
@@ -38,7 +41,6 @@
     {{ content|lang|host|safe }}
     {% endblock %}
   </div>
-  {% if not like_buttons is defined %}{% set like_buttons = True %}{% endif %}
   {% if like_buttons == True %}
     <div class="like-buttons">
       Like this page? <b>Share it!</b>
@@ -49,28 +51,21 @@
     </div>
   {% endif %}
 
-  {% if not comments is defined %}{% set comments = False %}{% endif %}
   {% if comments == True %}
-    <br><br>
-    <div id="disqus_thread"></div>
-    <script type="text/javascript">
-        /* * * CONFIGURATION VARIABLES: EDIT BEFORE PASTING INTO YOUR WEBPAGE * * */
-        var disqus_shortname = 'dheeranet'; // required: replace example with your forum shortname
-        var disqus_config = function () { 
-          {% filter lang %}
-            this.language = "{|en:en|zh:zh_TW|}";
-          {% endfilter %}
-        };
-
-        /* * * DON'T EDIT BELOW THIS LINE * * */
-        (function() {
-            var dsq = document.createElement('script'); dsq.type = 'text/javascript'; dsq.async = true;
-            dsq.src = '//' + disqus_shortname + '.disqus.com/embed.js';
-            (document.getElementsByTagName('head')[0] || document.getElementsByTagName('body')[0]).appendChild(dsq);
-        })();
-    </script>
-    <noscript>Please enable JavaScript to view the <a href="http://disqus.com/?ref_noscript">comments powered by Disqus.</a></noscript>
-    <a href="http://disqus.com" class="dsq-brlink">comments powered by <span class="logo-disqus">Disqus</span></a>
+    {% filter host %}
+{$!cn?
+<br>
+<div id="fb-root"></div>
+<script>(function(d, s, id) {
+  var js, fjs = d.getElementsByTagName(s)[0];
+  if (d.getElementById(id)) return;
+  js = d.createElement(s); js.id = id;
+  js.src = "//connect.facebook.net/en_US/sdk.js#xfbml=1&appId=731406776917435&version=v2.0";
+  fjs.parentNode.insertBefore(js, fjs);
+}(document, 'script', 'facebook-jssdk'));</script>
+<div data-width="100%" class="fb-comments" data-href="http://dheera.net{{ request.path }}" data-numposts="5" data-colorscheme="light"></div>
+$}
+    {% endfilter %}
   {% endif %}
 
 </div>
