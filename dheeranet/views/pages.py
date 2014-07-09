@@ -36,11 +36,16 @@ def show(path):
     if 'like_buttons' not in params:
       params['like_buttons'] = True
 
+    if 'comments' not in params:
+      params['comments'] = False
+
+
     return render_template(
       'page.html',
       title=params['title'],
       subtitle=params['subtitle'],
       content=content,
+      comments=params['comments'],
       like_buttons=params['like_buttons'],
       subnavbar=subnavbar
     )
