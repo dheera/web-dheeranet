@@ -26,6 +26,7 @@ for the JavaScript code in this page.
 $(document).ready(function() {
   $('.nodrag').mousedown(function(event){event.preventDefault();});
   $('.clickable').mouseenter(function(){$(this).addClass('clickable-hover');}).mouseleave(function(){$(this).removeClass('clickable-hover');}).mousedown(function(event){event.preventDefault();});
+  $('.like-buttons img').mouseenter(function(){$(this).addClass('like-buttons-hover');}).mouseleave(function(){$(this).removeClass('like-buttons-hover');}).mousedown(function(event){event.preventDefault();});
   $('.photos-like-container')
     .mouseenter(function(){
       $(this).children('.photos-like-text').transition({'top':'-140px','duration':200});
@@ -98,3 +99,4 @@ var cssTransitionsSupported = false;
 })();
 
 
+(function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-52351633-1', 'auto');ga('send', 'pageview');
