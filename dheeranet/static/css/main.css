@@ -119,24 +119,26 @@ h1, h2, h3 {
 
 h1 {
   font-size:50px;
-  color:#808080;
   font-weight:normal;
   margin-top:0;padding-top:0;
   margin-bottom:0;padding-bottom:0;
   line-height:60px;
+  text-transform:uppercase;
+  color:#c0c0c0;
 }
 
 h2 {
   font-size:36px;
   line-height:46px;
-  color:#808080;
   font-weight:normal;
+  text-transform:uppercase;
+  color:#c0c0c0;
 }
 
 h3 {
-  font-size:24px;
+  font-size:28px;
   line-height:32px;
-  color:#808080;
+  color:#a0a0a0;
   font-weight:normal;
 }
 
