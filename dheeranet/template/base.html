@@ -24,6 +24,7 @@
 </head>
 
 <body>
+<div class="base">
   <div class="topbar">
     <div style="margin-left:auto;margin-right:auto;max-width:980px;padding:0px;border-lft:0px solid #808080;border-right:0px solid #808080;border-bottom:0px;">
       <ul class="navbar">
@@ -52,8 +53,6 @@
       </ul>
     </div>
   </div>
-  <div></div>
-
   <div class="content">{% block main %}{% endblock %}</div>
   <div class="footer">
     <div class="mobile-only mobile-lang">
@@ -71,5 +70,6 @@
       {% endblock %}
     </div>
   </div>
+</div>
 </body>
 </html>

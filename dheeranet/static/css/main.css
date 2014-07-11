@@ -44,6 +44,7 @@ html {
 }
 
 body {
+  background:#f0f0f0;
   overflow-x:hidden;
   margin:0;
   font-family: mainfont, Droid Sans, JhengHei, SimHei, Trebuchet MS, Verdana, Arial, Helvetica, sans-serif;
@@ -161,6 +162,12 @@ h3 {
   background:#ffffff;
 }
 
+.base {
+  max-width:1060px;
+  background:#ffffff;
+  margin-left:auto;
+  margin-right:auto; 
+}
 .navbar {
   display:inline-block;
   float:right;
@@ -596,6 +603,10 @@ border:0;
 
 .content_title {
   display:inline-block;
+}
+
+.content {
+  background:#ffffff;
 }
 
 @media screen and (max-width: 1000px) and (min-width: 100px) {
