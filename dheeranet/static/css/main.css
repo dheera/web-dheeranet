@@ -765,7 +765,7 @@ border:0;
 .navbar-mobile-button:hover span,
 .navbar-mobile-button:hover span:before,
 .navbar-mobile-button:hover span:after {
-  background: #60a0ff;
+  background: #b0b0b0;
 }
 .navbar-mobile-button:before {
   content: '';
