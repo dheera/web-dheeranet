@@ -2,7 +2,7 @@
 @licstart  The following is the entire license notice for the 
 JavaScript code in this page.
 
-Copyright (C) 2012  Loic J. Duros
+Copyright (C) Dheera Venkatraman (dheera@dheera.net)
 
 The JavaScript code in this page is free software: you can
 redistribute it and/or modify it under the terms of the GNU
@@ -18,7 +18,6 @@ that code without the copy of the GNU GPL normally required by
 section 4, provided you include this license notice and a URL
 through which recipients can access the Corresponding Source.   
 
-
 @licend  The above is the entire license notice
 for the JavaScript code in this page.
 */
@@ -26,6 +25,10 @@ for the JavaScript code in this page.
 $(document).ready(function() {
   $('.nodrag').mousedown(function(event){event.preventDefault();});
   $('.clickable').mouseenter(function(){$(this).addClass('clickable-hover');}).mouseleave(function(){$(this).removeClass('clickable-hover');}).mousedown(function(event){event.preventDefault();});
+  $('.navbar-mobile-button').click(function(){
+    $(this).toggleClass('is-active');
+    $('.navbar-mobile-container').slideToggle();
+  });
   $('.like-buttons img').mouseenter(function(){$(this).addClass('like-buttons-hover');}).mouseleave(function(){$(this).removeClass('like-buttons-hover');}).mousedown(function(event){event.preventDefault();});
   $('.photos-like-container')
     .mouseenter(function(){
@@ -97,6 +100,5 @@ var cssTransitionsSupported = false;
     cssTransitionsSupported = (div.firstChild.style.webkitTransition !== undefined) || (div.firstChild.style.MozTransition !== undefined);
     delete div;
 })();
-
 
 (function(i,s,o,g,r,a,m){i['GoogleAnalyticsObject']=r;i[r]=i[r]||function(){(i[r].q=i[r].q||[]).push(arguments)},i[r].l=1*new Date();a=s.createElement(o),m=s.getElementsByTagName(o)[0];a.async=1;a.src=g;m.parentNode.insertBefore(a,m)})(window,document,'script','//www.google-analytics.com/analytics.js','ga');ga('create', 'UA-52351633-1', 'auto');ga('send', 'pageview');

@@ -190,6 +190,21 @@ h3 {
   width:auto;
 }
 
+.navbar-mobile-button {
+  display:none;
+  float:right;
+  margin-top:20px;
+  margin-right:20px;
+  width: 50px;
+  height: 50px;
+  position: relative;
+  background: transparent;
+  border: none;
+  vertical-align: middle;
+  padding: 10px;
+  cursor: pointer;
+}
+
 .navbar-mobile-container {
   display:none;
 }
@@ -259,16 +274,6 @@ h3 {
   text-decoration:none !important;
   font-weight:normal !important;
   color:#b0b0b0 !important;
-}
-
-.navbar-mobile-button {
-  display:none;
-  float:right;
-  width:32px;
-  height:32px;
-  margin-top:34px;
-  margin-right:25px;
-  border: 0;
 }
 
 .subnavbar {
@@ -735,3 +740,73 @@ border:0;
   }
 }
                                               
+
+.navbar-mobile-button:focus {
+  outline: 0;
+}
+.navbar-mobile-button:hover span,
+.navbar-mobile-button:hover span:before,
+.navbar-mobile-button:hover span:after {
+  background: #60a0ff;
+}
+.navbar-mobile-button:before {
+  content: '';
+  opacity: 0;
+  width: 0;
+  height: 0;
+  border-radius: 50%;
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  background: transparent;
+  -webkit-transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+  transform: translate(-50%, -50%);
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+}
+.navbar-mobile-button span {
+  display: block;
+  position: relative;
+}
+.navbar-mobile-button span:before, .navbar-mobile-button span:after {
+  content: '';
+  position: absolute;
+  left: 0;
+}
+.navbar-mobile-button span:before {
+  top: -8px;
+}
+.navbar-mobile-button span:after {
+  bottom: -8px;
+}
+.navbar-mobile-button span,
+.navbar-mobile-button span:before,
+.navbar-mobile-button span:after {
+  width: 100%;
+  height: 4px;
+  background: #b0b0b0;
+  -webkit-transition: all 0.4s ease;
+  transition: all 0.4s ease;
+}
+.navbar-mobile-button.is-active:before {
+  opacity: 1;
+  width: 50px;
+  height: 50px;
+  background: #fff;
+}
+.navbar-mobile-button.is-active span {
+  background: transparent;
+}
+.navbar-mobile-button.is-active span:before {
+  top: 0;
+  -webkit-transform: rotate(225deg);
+  -ms-transform: rotate(225deg);
+  transform: rotate(225deg);
+}
+.navbar-mobile-button.is-active span:after {
+  bottom: 0;
+  -webkit-transform: rotate(-225deg);
+  -ms-transform: rotate(-225deg);
+  transform: rotate(-225deg);
+}

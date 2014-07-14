@@ -14,7 +14,7 @@
   {% block meta %}{% endblock %}
   <meta http-equiv="Content-type" content="text/html;charset=utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1">
-  <link rel="stylesheet" type="text/css" href="/static/css/main.css">
+  <link rel="stylesheet" type="text/css" href="/static/css/main.css?version=2">
   <link rel="stylesheet" type="text/css" href="/static/css/swipebox.css">
   <script type="text/javascript" src="/static/js/jquery-2.0.3.min.js"></script>
   <script type="text/javascript" src="/static/js/jquery.swipebox.js"></script>
@@ -38,7 +38,8 @@
           <li class="clickable{% if href==request.path or (href.__len__()>1 and request.path.find(href) == 0) %} navbar-active{% else %} navbar-inactive{% endif %}" onclick="window.location.href='{{ href|e }}'"><a href="{{ href|e }}">{{ caption|lang|e }}</a></li>
         {%- endfor -%}
       </ul>
-      <img onclick="$('.navbar-mobile-container').slideToggle();" src="http://static.dheera.net/images/mobile-menu.png" class="navbar-mobile-button" style="width:32px;height:32px;cursor:pointer;">
+      <!-- <img onclick="$('.navbar-mobile-container').slideToggle();" src="http://static.dheera.net/images/mobile-menu.png" class="navbar-mobile-button" style="width:32px;height:32px;cursor:pointer;"> -->
+      <button class="navbar-mobile-button" type="button"><span></span></button>
       <div class="logo">
         <div onclick="window.location.href='/';" class="ui-cover" style="cursor:pointer;cursor:hand;width:150px;height:67px;"></div>
         <object data="http://static.dheera.net/images/logo.svg" type="image/svg+xml"><img alt="dheera.net" src="http://static.dheera.net/images/logo.png"></object>
