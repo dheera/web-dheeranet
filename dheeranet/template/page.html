@@ -16,7 +16,7 @@
   <div style="padding-bottom:35px;">
     {%- if subnavbar -%}
     <div style="display:inline-block">
-      <h1 class="content_title">{{ title|lang|e }}</h1>
+      <h1 class="content_title">{{ title|lang|zhimage|e }}</h1>
     </div>
     <div class="subnavbar">
       <ul>
@@ -33,7 +33,7 @@
       </ul>
     </div>
     {% else %}
-      <h1 class="content_title">{{ title|lang|e }}</h1>
+      <h1 class="content_title">{{ title|lang|zhimage|e }}</h1>
     {%- endif -%}
   </div>
   <div>
@@ -47,7 +47,7 @@
       <a onclick="window.open(this.href,'sharer','width=720,height=480,toolbar=0,status=0')" class="clickable" href="http://www.facebook.com/sharer.php?u=http://dheera.net{{ request.path }}%3Fn=1" target="_new"><img src="http://static.dheera.net/icons/facebook.png"></a>
       <a onclick="window.open(this.href,'sharer','width=720,height=480,toolbar=0,status=0')" class="clickable" href="http://v.t.sina.com.cn/share/share.php?title={{ title|lang|urlencode }}&amp;ralateUid=1935328294&amp;url=http://dheerae.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/weibo.png"></a>
       <a onclick="window.open(this.href,'sharer','width=520,height=600,scrollbars=0,toolbar=0,status=0')" class="clickable" href="https://plus.google.com/share?url=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/gplus.png"></a>
-      <a onclick="window.open(this.href,'sharer','width=720,height=320,toolbar=0,status=0')" class="clickable" href="http://twitter.com/share?text={{ title|lang|urlencode }}&amp;url=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/twitter.png"></a>
+      <a onclick="window.open(this.href,'sharer','width=720,height=320,toolbar=0,status=0')" class="clickable" href="http://twitter.com/share?text={{ title|lang|urlencode }}+by+@dheeranet&amp;url=http://dheera.net{{ request.path }}" target="_new"><img src="http://static.dheera.net/icons/twitter.png"></a>
     </div>
   {% endif %}
 
