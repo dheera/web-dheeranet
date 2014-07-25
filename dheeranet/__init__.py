@@ -35,13 +35,13 @@ def request_hostname():
   return revdns(request.remote_addr)
 
 # replaces chinese characters with images (for headlines)
-def zhimage_filter(code):
-  def replace(char):
-    if char >= u'\u4e00' and char <= u'\u9fff':
-      return u'<img class="char" style="height:1em;margin-top:-10px;" align="absmiddle" src="/headline/' + quote(char.encode('utf-8')) + '">'
-    else:
-      return char
-  return Markup("".join(map(replace, code)))
+#def zhimage_filter(code):
+#  def replace(char):
+#    if char >= u'\u4e00' and char <= u'\u9fff':
+#      return u'<img class="char" style="height:1em;margin-top:-10px;" align="absmiddle" src="/headline/' + quote(char.encode('utf-8')) + '">'
+#    else:
+#      return char
+#  return Markup("".join(map(replace, code)))
 
 # parses for host-based filters: {$cn?youku_url}{$!cn?youtube_url$}
 def host_filter(code):
@@ -127,7 +127,7 @@ app = Flask(__name__)
 app.jinja_options['extensions'].append('jinja2htmlcompress.HTMLCompress')
 app.jinja_env.filters['lang'] = lang_filter
 app.jinja_env.filters['host'] = host_filter
-app.jinja_env.filters['zhimage'] = zhimage_filter
+# app.jinja_env.filters['zhimage'] = zhimage_filter
 app.jinja_env.globals.update(request_hostname=request_hostname)
 app.jinja_env.globals.update(randrange=randrange)
 app.jinja_env.globals.update(request=request)
