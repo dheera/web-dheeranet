@@ -14,7 +14,7 @@
 {% block main %}
 <div class="content_page">
   <div style="padding-bottom:35px;">
-    {%- if subnavbar -%}
+    {%- if subnavbar and not ( subnavbar.__len__()==1 and subnavbar[0][0]==request.path) -%}
     <div style="display:inline-block">
       <h1 class="content_title">{{ title|lang|e }}</h1>
     </div>
