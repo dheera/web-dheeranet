@@ -161,11 +161,11 @@ def after_request(response):
 
   hostname = request_hostname()
   if hostname:
-    if 'embarqhsd' in hostname:
-      return redirect('http://old.dheera.net/')
+    #if 'embarqhsd' in hostname:
+    #  return redirect('http://old.dheera.net/')
 
-    if 'nj.comcast' in hostname:
-      return redirect('http://old.dheera.net/')
+    #if 'nj.comcast' in hostname:
+    #  return redirect('http://old.dheera.net/')
 
   if response.headers['Content-Type'].find('image/')==0:
     response.headers['Cache-Control'] = 'max-age=7200, must-revalidate'
