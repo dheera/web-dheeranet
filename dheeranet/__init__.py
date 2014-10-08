@@ -160,7 +160,7 @@ app.register_blueprint(pages)
 def after_request(response):
 
   hostname = request_hostname()
-  if hostname:
+  #if hostname:
     #if 'embarqhsd' in hostname:
     #  return redirect('http://old.dheera.net/')
 
