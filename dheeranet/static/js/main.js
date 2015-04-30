@@ -58,15 +58,15 @@ $(document).ready(function() {
       event.preventDefault();}
     );
   $(".photos-thumbnail")
-    .swipebox({useCSS:true})
     .bind('touchstart', function(e) {
       vibrate(10);
-    });
+    })
+    .swipebox({useCSS:true})
   $(".photos-thumbnail-mobile")
-    .swipebox({useCSS:true})
     .bind('touchstart', function(e) {
       vibrate(10);
-    });
+    })
+    .swipebox({useCSS:true})
   $('.photos-album').mouseleave(function(){
     $(this).children('.photos-album-description').css('opacity','0');
   });
