@@ -78,7 +78,7 @@ var oldHash = window.location.hash;
 function vibrate(t) {
   v = window.navigator.vibrate || window.navigator.webkitVibrate || window.navigator.mozVibrate;
   if(v) {
-    v(t);
+    v.call(navigator, t);
   }
 }
 
