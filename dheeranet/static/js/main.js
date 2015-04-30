@@ -54,6 +54,9 @@ $(document).ready(function() {
       $(this).removeClass('clickable-hover');
       $(this).children('.photos-thumbnail-download').css('opacity',0);
     })
+    .bind('touchstart', function(e) {
+      vibrate(10);
+    })
     .mousedown(function(event){
       event.preventDefault();}
     );
