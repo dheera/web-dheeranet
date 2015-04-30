@@ -25,8 +25,10 @@ for the JavaScript code in this page.
 $(document).ready(function() {
   $('.nodrag').mousedown(function(event){event.preventDefault();});
   $('.clickable').mouseenter(function(){$(this).addClass('clickable-hover');}).mouseleave(function(){$(this).removeClass('clickable-hover');}).mousedown(function(event){event.preventDefault();});
+  $('.navbar-mobile-button').bind('touchstart', function(e){
+    vibrate(10);
+  });
   $('.navbar-mobile-button').click(function(){
-    vibrate(5);
     $(this).toggleClass('is-active');
     $('.navbar-mobile-container').slideToggle();
   });
