@@ -182,7 +182,7 @@ def album_list_filenames(album, pic_format = PHOTOS_FORMAT_ORIGINAL, force_recac
   return filenames
 
 def album_get_url(album,filename,pic_format=PHOTOS_FORMAT_ORIGINAL):
-  return "http://{bucket_name}/{prefix}{album}/{pic_format}/{filename}".format(
+  return "//s3.amazonaws.com/{bucket_name}/{prefix}{album}/{pic_format}/{filename}".format(
     bucket_name = PHOTOS_BUCKET_NAME,
     prefix = PHOTOS_PREFIX,
     album = album,
