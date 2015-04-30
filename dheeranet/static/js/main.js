@@ -54,14 +54,19 @@ $(document).ready(function() {
       $(this).removeClass('clickable-hover');
       $(this).children('.photos-thumbnail-download').css('opacity',0);
     })
-    .bind('touchstart', function(e) {
-      vibrate(10);
-    })
     .mousedown(function(event){
       event.preventDefault();}
     );
-  $(".photos-thumbnail").swipebox({useCSS:true});
-  $(".photos-thumbnail-mobile").swipebox({useCSS:true});
+  $(".photos-thumbnail")
+    .swipebox({useCSS:true})
+    .bind('touchstart', function(e) {
+      vibrate(10);
+    });
+  $(".photos-thumbnail-mobile")
+    .swipebox({useCSS:true})
+    .bind('touchstart', function(e) {
+      vibrate(10);
+    });
   $('.photos-album').mouseleave(function(){
     $(this).children('.photos-album-description').css('opacity','0');
   });
