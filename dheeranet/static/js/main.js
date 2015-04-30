@@ -26,6 +26,7 @@ $(document).ready(function() {
   $('.nodrag').mousedown(function(event){event.preventDefault();});
   $('.clickable').mouseenter(function(){$(this).addClass('clickable-hover');}).mouseleave(function(){$(this).removeClass('clickable-hover');}).mousedown(function(event){event.preventDefault();});
   $('.navbar-mobile-button').click(function(){
+    vibrate(5);
     $(this).toggleClass('is-active');
     $('.navbar-mobile-container').slideToggle();
   });
@@ -73,6 +74,13 @@ $(document).ready(function() {
 
 // hack to be able to change hashes without triggering hashchange event
 var oldHash = window.location.hash;
+
+function vibrate(t) {
+  var v = window.navigator.vibrate || window.navigator.webkitVibrate || window.navigator.mozVibrate;
+  if(v) {
+    v(t);
+  }
+}
 
 function changeHash(newHash) {
   // prevent triggering of onHashChange code
