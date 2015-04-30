@@ -220,7 +220,10 @@ h3 {
 }
 
 .navbar-mobile li {
-  display:table-cell;
+  display:block;
+  padding-top:5px;
+  padding-bottom:5px;
+  border-bottom:1px solid #f0f0f0;
   vertical-align:middle;
   text-align:center;
   font-size:17px;
