@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Flask, request, render_template, send_file, send_from_directory, redirect
+from flask_sslify import SSLify
 from jinja2 import Markup
 from boto.s3.connection import S3Connection
 from cache import cached, s3_get_cached
@@ -124,6 +125,8 @@ def lang_filter(code):
   return re.sub('\{\|.*?\|\}',repl_func,code,flags=re.S)
 
 app = Flask(__name__)
+sslify = SSLify(app)
+
 app.jinja_options['extensions'].append('jinja2htmlcompress.HTMLCompress')
 app.jinja_env.filters['lang'] = lang_filter
 app.jinja_env.filters['host'] = host_filter
