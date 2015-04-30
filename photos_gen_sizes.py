@@ -116,6 +116,7 @@ for album in albums:
         sys.stdout.flush()
   
         call(['nice', 'composite',
+             '-interlace', 'Plane',
              '-gravity', 'SouthWest',
              '-quality', '94',
              '-compose', 'over', watermark_file,
@@ -202,6 +203,7 @@ for album in albums:
         sys.stdout.flush()
   
         call(['nice', 'composite',
+             '-interlace', 'Plane',
              '-gravity', 'SouthWest',
              '-quality', '94',
              '-compose', 'over', watermark_file,
@@ -247,6 +249,7 @@ for album in albums:
   
         call(['convert',
              '-strip',
+             '-interlace', 'Plane',
              tempdir + '/' + filename + '.small.jpg',
              '-thumbnail', '140x140^',
              '-gravity', 'center',
@@ -282,6 +285,7 @@ for album in albums:
   
         call(['convert',
              '-strip',
+             '-interlace', 'Plane',
              tempdir + '/' + filename + '.small.jpg',
              '-thumbnail', '200x200^',
              '-gravity', 'center',
