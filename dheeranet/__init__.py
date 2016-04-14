@@ -5,6 +5,7 @@ from flask import Flask, request, render_template, send_file, send_from_director
 from flask_sslify import SSLify
 from jinja2 import Markup
 from boto.s3.connection import S3Connection
+import boto.s3.connection
 from cache import cached, s3_get_cached
 import re
 import json
@@ -18,7 +19,8 @@ geoip = pygeoip.GeoIP('/usr/local/share/geoip/GeoIP.dat', pygeoip.MEMORY_CACHE)
 
 s3 = S3Connection(
   open(os.path.dirname(__file__) + '/../.aws_id').read().strip(),
-  open(os.path.dirname(__file__) + '/../.aws_secret').read().strip()
+  open(os.path.dirname(__file__) + '/../.aws_secret').read().strip(),
+  calling_format = boto.s3.connection.OrdinaryCallingFormat()
 )
 static_bucket = s3.get_bucket('static.dheera.net')
 
