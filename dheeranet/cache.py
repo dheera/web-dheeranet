@@ -24,7 +24,7 @@ def s3_list_cached(s3_bucket, s3_prefix, s3_delimiter, timeout=None, force_recac
   response = cache.get(cache_key)
   if force_recache or not response:
     response = s3_bucket.list(s3_prefix, s3_delimiter)
-    response = map(lambda(k): k.name.encode('utf-8'), response)
+    response = list(map(lambda k: k.name.encode('utf-8'), response))
     cache.set(cache_key, response,
       timeout or randrange(CACHE_TIMEOUT-CACHE_TIMEOUT/10, CACHE_TIMEOUT + CACHE_TIMEOUT/10))
   return response

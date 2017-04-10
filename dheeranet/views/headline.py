@@ -2,7 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from flask import Blueprint, render_template, abort, Response, send_file, send_from_directory, request, make_response
-import StringIO
+import io
 from jinja2 import TemplateNotFound
 import os, sys
 from dheeranet.cache import cached
@@ -26,7 +26,7 @@ def show_headline(text):
 
   image = image.resize((width / 2, height / 2), Image.ANTIALIAS)
   image = image.crop((0, 0, width/2, height/2))
-  buf = StringIO.StringIO()
+  buf = io.StringIO()
   image.save(buf, 'PNG')
   image_data = buf.getvalue()
   buf.close()

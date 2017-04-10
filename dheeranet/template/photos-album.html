@@ -16,7 +16,7 @@
 {% filter lang %}
 
 {% if 'description' in album_info %}
-{{ album_info['description'] }}<br><br>
+{{ album_info['description'] |safe}}<br><br>
 {% endif %}
 
   <div class="photos-thumbnail-set noselect">

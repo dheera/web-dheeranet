@@ -51,9 +51,9 @@ def show_banner():
                   PHOTOS_PREFIX + '__banner__',
                   timeout = 86400).split('\n')
   banner_list = map(lambda x:x.strip().split(','), banner_list)
-  banner_list = filter(lambda x: len(x)==2, banner_list)
+  banner_list = list(filter(lambda x: len(x)==2, banner_list))
   banner_list = random.sample(banner_list, 10)
-  urls = map(lambda x:album_get_url(x[0], x[1], PHOTOS_FORMAT_SMALL), banner_list)
+  urls = list(map(lambda x:album_get_url(x[0], x[1], PHOTOS_FORMAT_SMALL), banner_list))
 
   return render_template('photos-banner.html',
     title = u'banner',
@@ -107,7 +107,7 @@ def list_albums(path, force_recache = False):
   albums = s3_list_cached(PHOTOS_BUCKET,
     PHOTOS_PREFIX + path + '/', '/',
     force_recache = force_recache)
-  albums = map(lambda(k): k.strip('/').replace('photos/',''), albums)
+  albums = list(map(lambda k: k.strip('/').replace('photos/',''), albums))
   if path in albums:
     albums.remove(path)
   return [album for album in albums if album_get_info(album)]
@@ -168,17 +168,17 @@ def album_get_info(album):
       info['title'] = album
     return info
 
-  except ValueError, e:
-    print "error: invalid json: %s" % info_json
+  except ValueError:
+    print("error: invalid json: %s" % info_json)
     return None
 
 def album_list_filenames(album, pic_format = PHOTOS_FORMAT_ORIGINAL, force_recache = False):
   filenames = s3_list_cached(PHOTOS_BUCKET,
     PHOTOS_PREFIX + album + '/' + pic_format + '/', '/',
     force_recache = force_recache)
-  filenames = map(lambda(k): k.strip('/'), filenames)
-  filenames = map(lambda(s): s[s.rfind('/')+1:], filenames)
-  filenames = filter(lambda x: x.endswith('.jpg') or x.endswith('.png'), filenames)
+  filenames = list(map(lambda k: k.strip('/'), filenames))
+  filenames = list(map(lambda s: s[s.rfind('/')+1:], filenames))
+  filenames = list(filter(lambda x: x.endswith('.jpg') or x.endswith('.png'), filenames))
   return filenames
 
 def album_get_url(album,filename,pic_format=PHOTOS_FORMAT_ORIGINAL):

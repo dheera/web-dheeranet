@@ -1,21 +1,22 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 
-from flask import Flask, request, render_template, send_file, send_from_directory, redirect
-from flask_sslify import SSLify
-from jinja2 import Markup
-from boto.s3.connection import S3Connection
 import boto.s3.connection
-from cache import cached, s3_get_cached
 import re
 import json
 import os
-import socket
-from urllib2 import quote
-from random import randrange
 import pygeoip
+import socket
 
-geoip = pygeoip.GeoIP('/usr/local/share/geoip/GeoIP.dat', pygeoip.MEMORY_CACHE)
+from flask import Flask, request, render_template, send_file, send_from_directory, redirect
+#from flask_sslify import SSLify
+from jinja2 import Markup
+from boto.s3.connection import S3Connection
+from .cache import cached, s3_get_cached
+#from urllib2 import quote
+from random import randrange
+
+geoip = pygeoip.GeoIP('dheeranet/data/GeoLiteCity.dat', pygeoip.MEMORY_CACHE)
 
 s3 = S3Connection(
   open(os.path.dirname(__file__) + '/../.aws_id').read().strip(),
@@ -49,7 +50,12 @@ def request_hostname():
 # parses for host-based filters: {$cn?youku_url}{$!cn?youtube_url$}
 def host_filter(code):
   host_tags = []
-  host_tags.append(geoip.country_code_by_addr(request.remote_addr).lower())
+  geo_result = geoip.region_by_addr(request.remote_addr)
+  if geo_result:
+    if geo_result.get('country_code', None):
+      host_tags.append(geo_result['country_code'].lower())
+      if geo_result.get('region_code', None):
+        host_tags.append((geo_result['country_code'] + '.' + geo_result['region_code']).lower())
   host_tags_info = json.loads(s3_get_cached(static_bucket, '__hosts__'))
 
   hostname = request_hostname()
@@ -127,7 +133,7 @@ def lang_filter(code):
   return re.sub('\{\|.*?\|\}',repl_func,code,flags=re.S)
 
 app = Flask(__name__)
-sslify = SSLify(app)
+#sslify = SSLify(app)
 
 app.jinja_options['extensions'].append('jinja2htmlcompress.HTMLCompress')
 app.jinja_env.filters['lang'] = lang_filter
@@ -141,13 +147,13 @@ app.jinja_env.globals.update(len=len)
 app.jinja_env.globals.update(min=min)
 app.jinja_env.globals.update(max=max)
 
-from views.home import home
+from .views.home import home
 app.register_blueprint(home)
 
-from views.headline import headline
+from .views.headline import headline
 app.register_blueprint(headline,url_prefix='/headline')
 
-from views.photos import photos
+from .views.photos import photos
 app.register_blueprint(photos,url_prefix='/photos')
 
 @app.route('/static/<path:filename>')
@@ -158,7 +164,7 @@ def send_foo(filename):
 def send_favicon():
     return send_file('static/favicon.ico')
 
-from views.pages import pages
+from .views.pages import pages
 app.register_blueprint(pages)
 
 @app.after_request

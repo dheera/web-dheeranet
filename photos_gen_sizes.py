@@ -31,6 +31,7 @@ albums = photos.list_albums('places', force_recache=True) + \
          photos.list_albums('journeys', force_recache=True) + \
          photos.list_albums('events', force_recache=True) + \
          photos.list_albums('abstract', force_recache=True) + \
+         photos.list_albums('people', force_recache=True) + \
          photos.list_albums('things', force_recache=True)
 
 process_count = 0
